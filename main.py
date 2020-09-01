@@ -5,9 +5,10 @@
 import time
 
 from Exceptions.ModuleFailedLoading import ModuleFailedLoading
-from Utilidades.configuration import Configuracion
+from Módulos.api import Api
+from Módulos.configuration import Configuracion
+from Módulos.utilities import Utilidades
 from Utilidades.logtype import LogType
-from Utilidades.utilities import Utilidades
 
 
 class App:
@@ -30,6 +31,7 @@ class App:
         try:
             utilidades = Utilidades(self, "Utilidades")
             configuracion = Configuracion(self, "Configuración")
+            api = Api(self, "APIManager")
         except ModuleFailedLoading:
             exit()
 
@@ -73,7 +75,7 @@ class App:
 
 
 def main():
-    app = App("Hotel System", False)
+    app = App("Hotel System", True)
     app.start()
 
 

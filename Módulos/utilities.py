@@ -5,7 +5,7 @@
 
 import time
 
-from modules import Modulo
+from modulo import Modulo
 
 
 class Utilidades(Modulo):
