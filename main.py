@@ -31,19 +31,17 @@ class App:
         try:
             utilidades = Utilidades(self, "Utilidades")
             configuracion = Configuracion(self, "Configuración")
-            api = Api(self, "APIManager")
+            api = Api(self, "APIManager", configuracion)
         except ModuleFailedLoading:
             exit()
-
-        token = configuracion.getToken()
 
         finishTime = self.getTime()
         self.log(f"Aplicación iniciada en [{finishTime - startTime}ms].", LogType.NORMAL)
         while self.started:
             try:
                 opcion = str(input("Ingresa una opción:  ".strip())).upper()
-                if opcion == "FLIGHTS":
-                    pass
+                if opcion == "API":
+                    api.home()
                 elif opcion == "SALIR":
                     self.stop()
                 else:
@@ -55,7 +53,6 @@ class App:
 
     def stop(self):
         self.started = False
-        # TODO: End all modules.
         for modulo in self.modulos:
             modulo.end()
         print("Aplicación cerrada correctamente.")
@@ -75,7 +72,7 @@ class App:
 
 
 def main():
-    app = App("Hotel System", True)
+    app = App("Airport System", True)
     app.start()
 
 

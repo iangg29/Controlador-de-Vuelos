@@ -10,7 +10,7 @@ class Modulo:
     def __init__(self, app, name):
         self.app = app
         self.name = name
-        if app.debug: print(f"Iniciando módulo [{name.lower()}].")
+        if app.debug: self.log(f"Iniciando módulo [{name.upper()}].", LogType.NORMAL)
         app.loadModulos(self)
 
     def end(self):
@@ -19,7 +19,7 @@ class Modulo:
     def getApp(self):
         return self.app
 
-    def log(self, mensaje, tipo):
+    def log(self, mensaje, tipo=LogType.NORMAL):
         print(f"{tipo} {mensaje}")
 
     def getName(self) -> str:

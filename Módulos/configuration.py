@@ -17,3 +17,15 @@ class Configuracion(Modulo):
 
     def getToken(self) -> str:
         return os.getenv("TOKEN")
+
+    def getUser(self) -> str:
+        return os.getenv("DBUSER")
+
+    def getPassword(self) -> str:
+        return os.getenv("DBPASSWORD")
+
+    def getHost(self) -> str:
+        return os.getenv("DBHOST")
+
+    def getDB(self) -> str:
+        return os.getenv("DBDATABASE")
