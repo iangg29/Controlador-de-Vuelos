@@ -7,10 +7,10 @@ import time
 from Exceptions.InvalidOption import InvalidOption
 from Exceptions.ModuleFailedLoading import ModuleFailedLoading
 from Exceptions.ZeroResults import ZeroResults
-from Módulos.airlineManager import AirlineManager
-from Módulos.configuration import Configuracion
-from Módulos.mysql import Mysql
-from Módulos.utilities import Utilidades
+from Modulos.airlineManager import AirlineManager
+from Modulos.configuration import Configuracion
+from Modulos.mysql import Mysql
+from Modulos.utilities import Utilidades
 from Utilidades.logtype import LogType
 
 
