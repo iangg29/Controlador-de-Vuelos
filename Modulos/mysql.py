@@ -6,6 +6,7 @@
 import mysql.connector
 from mysql.connector import errorcode
 
+from Exceptions.FailedDatabaseConnection import FailedDatabaseConnection
 from Objetos.Vuelo import Vuelo
 from Utilidades.logtype import LogType
 from modulo import Modulo
@@ -22,8 +23,7 @@ class Mysql(Modulo):
                                            database=dbdatabase)
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                self.log("[SQL] Error de acceso a la base de datos.", LogType.SEVERE)
-                exit()
+                raise FailedDatabaseConnection
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
                 self.log("[SQL] Error en la base de datos, no existe.", LogType.SEVERE)
                 exit()

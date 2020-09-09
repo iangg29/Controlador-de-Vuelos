@@ -11,7 +11,7 @@ class Aerolinea:
         self.clave = objeto[2]
 
     def __str__(self):
-        return f"{self.name} [{self.clave}]"
+        return f"{self.id} {self.name} [{self.clave}]"
 
     def getId(self) -> int:
         return int(self.id)

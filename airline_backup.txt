@@ -1,0 +1,17 @@
+--------------------
+FILE: airline_backup.txt
+MODULE: AirlineManager
+DATE: 8/9/2020
+HORA: 23:48:19
+--------------------
+Las aerolineas registradas a la fecha son:
+1 Aeromexico [AMX]
+2 Air Canada [ACA]
+3 American Airlines [AAL]
+4 British Airways [BAW]
+5 Delta [DAL]
+6 Japan Airlines [JAL]
+7 KLM [KLM]
+8 Volaris [VOL]
+9 Air France [AFR]
+10 Interjet [AIJ]
