@@ -2,6 +2,8 @@
 #  Ian García González
 #  A01706892
 #  Archivo creado el 8/9/2020.
+from Exceptions.FailedDatabaseConnection import FailedDatabaseConnection
+from Exceptions.InvalidObject import InvalidObject
 from Exceptions.InvalidOption import InvalidOption
 from Exceptions.ZeroResults import ZeroResults
 from Objetos.Aerolinea import Aerolinea
@@ -22,7 +24,7 @@ class AirlineManager(Modulo):
                                                      self.configurationModule.getPassword(),
                                                      self.configurationModule.getHost(),
                                                      self.configurationModule.getDB())
-        if not connection: return
+        if not connection: raise FailedDatabaseConnection
         # self.log("[SQL] La conexión con la base de datos fue exitosa.", LogType.NORMAL)
         cursor = connection.cursor()
         query = ("SELECT * FROM Aerolineas")
@@ -43,6 +45,38 @@ class AirlineManager(Modulo):
         for x in self.airlines:
             if x.getId() == id:
                 return x
+
+    def create(self, aerolinea):
+        if not aerolinea: raise InvalidObject
+        connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
+                                                     self.configurationModule.getPassword(),
+                                                     self.configurationModule.getHost(),
+                                                     self.configurationModule.getDB())
+        if not connection: raise FailedDatabaseConnection
+        cursor = connection.cursor()
+        query = "INSERT INTO Aerolineas (nombre, codigo) VALUES (%s, %s)"
+        valores = (aerolinea.getName(), aerolinea.getCode())
+        cursor.execute(query, valores)
+        connection.commit()
+        self.log("Nuevo registro creado.")
+
+    def edit(self, aerolineaVieja, aerolineaNueva):
+        if not aerolineaVieja and not aerolineaNueva: raise InvalidObject
+        connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
+                                                     self.configurationModule.getPassword(),
+                                                     self.configurationModule.getHost(),
+                                                     self.configurationModule.getDB())
+        if not connection: FailedDatabaseConnection
+
+        cursor = connection.cursor()
+
+        query = "UPDATE Aerolineas SET nombre = %s, codigo = %s WHERE id = %s"
+        values = (aerolineaNueva.getName(), aerolineaNueva.getCode(), aerolineaVieja.getId())
+
+        cursor.execute(query, values)
+
+        connection.commit()
+        self.log(f"{cursor.rowcount} registro(s) afectados.")
 
     def findCodigo(self, code) -> Aerolinea:
         self.loadData()
