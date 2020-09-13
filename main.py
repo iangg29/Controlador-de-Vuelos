@@ -21,7 +21,7 @@ from Utilidades.logtype import LogType
 
 class App:
     author = "Ian García"
-    version = "1.1"
+    version = "1.2"
 
     def __init__(self, name, debug):
         self.name = name
@@ -31,6 +31,9 @@ class App:
         self.mysql = None
         self.airlineManager = None
         self.utilities = None
+        self.configuracion = None
+        self.backupManager = None
+        self.dataRefresh = True
 
     def start(self):
         startTime = self._getTime()
@@ -44,14 +47,16 @@ class App:
 
             self.mysql = Mysql(self, "MySQL")
             self.utilities = Utilidades(self, "Utilidades")
-            configuracion = Configuracion(self, "Configuración")
+            self.configuracion = Configuracion(self, "Configuración")
 
             # DATA MANAGERS
-            self.airlineManager = AirlineManager(self, "AirlineManager", self.mysql, configuracion)
-            backupManager = BackupManager(self, "BackupManager", self.mysql)
+            self.airlineManager = AirlineManager(self, "AirlineManager")
+            self.backupManager = BackupManager(self, "BackupManager")
         except ModuleFailedLoading:
             self.log("Error al inicializar un módulo.", LogType.SEVERE)
             exit()
+
+        self.updateData()
 
         finishTime = self._getTime()
         self.log(f"Aplicación iniciada en [{finishTime - startTime}ms].")
@@ -68,6 +73,8 @@ class App:
                     pass
                 elif opcion == "PASAJEROS":
                     pass
+                elif opcion == "TEST":
+                    self.airlineManager.delete()
                 elif opcion == "BUSCAR":
                     a = str(input("Qué deseas buscar? (Vuelos/Aerolineas/Pasajeros/Aeropuertos)")).upper().strip()
                     if a == "AEROLINEAS":
@@ -129,7 +136,7 @@ class App:
                         self.debug = not self.debug
                         print("La configuración ha sido cambiada!")
                 elif opcion == "BACKUP":
-                    backupManager.airlineBackup()
+                    self.backupManager.airlineBackup()
                 elif opcion == "SALIR":
                     self.stop()
                 else:
@@ -158,6 +165,19 @@ class App:
         print("Aplicación cerrada correctamente.")
         exit()
 
+    def updateData(self):
+        if self.dataRefresh:
+            if self.debug: self.log("Actualizando datos...")
+            for modulo in self.modulos:
+                if modulo.isData():
+                    modulo.clearData()
+                    modulo.loadData()
+            if self.debug: self.log("Datos actualizados.")
+            self.needUpdate(False)
+
+    def needUpdate(self, bool):
+        self.dataRefresh = bool
+
     def getModulos(self):
         return self.modulos
 
@@ -184,6 +204,12 @@ class App:
 
     def getUtilities(self) -> Utilidades:
         return self.utilities
+
+    def getConfiguracion(self) -> Configuracion:
+        return self.configuracion
+
+    def getBackupManager(self) -> BackupManager:
+        return self.backupManager
 
 
 def main():

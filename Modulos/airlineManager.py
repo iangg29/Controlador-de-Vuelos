@@ -2,30 +2,31 @@
 #  Ian García González
 #  A01706892
 #  Archivo creado el 8/9/2020.
+
 from Exceptions.FailedDatabaseConnection import FailedDatabaseConnection
 from Exceptions.InvalidObject import InvalidObject
 from Exceptions.InvalidOption import InvalidOption
 from Exceptions.ZeroResults import ZeroResults
 from Objetos.Aerolinea import Aerolinea
+from Utilidades.ModuleType import ModuleType
 from modulo import Modulo
 
 
 class AirlineManager(Modulo):
 
-    def __init__(self, app, name, mysql, configuracion):
-        super().__init__(app, name)
+    def __init__(self, app, name):
+        super().__init__(app, name, ModuleType.DATA)
+        self.app = app
         self.airlines = []
-        self.mysqlModule = mysql
-        self.configurationModule = configuracion
+        self.mysqlModule = app.getMySQLManager()
+        self.configurationModule = app.getConfiguracion()
 
     def loadData(self):
-        # self.log("[SQL] Cargando datos ...", LogType.NORMAL)
         connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
                                                      self.configurationModule.getPassword(),
                                                      self.configurationModule.getHost(),
                                                      self.configurationModule.getDB())
         if not connection: raise FailedDatabaseConnection
-        # self.log("[SQL] La conexión con la base de datos fue exitosa.", LogType.NORMAL)
         cursor = connection.cursor()
         query = ("SELECT * FROM Aerolineas")
 
@@ -35,13 +36,11 @@ class AirlineManager(Modulo):
             newAirline = Aerolinea(x)
             if not x == newAirline:
                 self.airlines.append(newAirline)
-
-        # self.log("[SQL] Datos cargados correctamente.", LogType.NORMAL)
         cursor.close()
         connection.close()
 
     def findId(self, id) -> Aerolinea:
-        self.loadData()
+        self.app.updateData()
         for x in self.airlines:
             if x.getId() == id:
                 return x
@@ -59,6 +58,7 @@ class AirlineManager(Modulo):
         cursor.execute(query, valores)
         connection.commit()
         self.log("Nuevo registro creado.")
+        self.app.needUpdate(True)
 
     def edit(self, aerolineaVieja, aerolineaNueva):
         if not aerolineaVieja and not aerolineaNueva: raise InvalidObject
@@ -77,9 +77,10 @@ class AirlineManager(Modulo):
 
         connection.commit()
         self.log(f"{cursor.rowcount} registro(s) afectados.")
+        self.app.needUpdate(True)
 
     def findCodigo(self, code) -> Aerolinea:
-        self.loadData()
+        self.app.updateData()
         for x in self.airlines:
             if x.getCode().upper() == code.upper():
                 return x
@@ -102,9 +103,15 @@ class AirlineManager(Modulo):
         else:
             raise InvalidOption
 
+    def delete(self):
+        self.log("DELETE METHOD CALLED")
+
     def getAll(self):
-        self.loadData()
+        self.app.updateData()
         return self.airlines
+
+    def clearData(self):
+        self.airlines.clear()
 
     def end(self):
         super().end()

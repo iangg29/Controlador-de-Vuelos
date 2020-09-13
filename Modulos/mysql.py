@@ -8,6 +8,7 @@ from mysql.connector import errorcode
 
 from Exceptions.FailedDatabaseConnection import FailedDatabaseConnection
 from Objetos.Vuelo import Vuelo
+from Utilidades.ModuleType import ModuleType
 from Utilidades.logtype import LogType
 from modulo import Modulo
 
@@ -15,7 +16,7 @@ from modulo import Modulo
 class Mysql(Modulo):
 
     def __init__(self, app, name):
-        super().__init__(app, name)
+        super().__init__(app, name, ModuleType.UTILITY)
 
     def initConnection(self, dbuser, dbpassword, dbhost, dbdatabase):
         try:

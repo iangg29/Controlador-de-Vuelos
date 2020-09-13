@@ -2,15 +2,16 @@
 #  Ian García González
 #  A01706892
 #  Archivo creado el 8/9/2020.
+from Utilidades.ModuleType import ModuleType
 from modulo import Modulo
 
 
 class BackupManager(Modulo):
     fileName = "airline_backup.txt"
 
-    def __init__(self, app, name, sql):
-        super().__init__(app, name)
-        self.mysql = sql
+    def __init__(self, app, name):
+        super().__init__(app, name, ModuleType.UTILITY)
+        self.mysql = app.getMySQLManager()
 
     def airlineBackup(self):
         self.log("Iniciando backup de aerolineas...")

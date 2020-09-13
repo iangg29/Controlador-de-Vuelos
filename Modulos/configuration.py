@@ -6,13 +6,14 @@ import os
 
 from dotenv import load_dotenv
 
+from Utilidades.ModuleType import ModuleType
 from modulo import Modulo
 
 
 class Configuracion(Modulo):
 
     def __init__(self, app, nombre):
-        super().__init__(app, nombre)
+        super().__init__(app, nombre, ModuleType.UTILITY)
         load_dotenv()
 
     def getToken(self) -> str:

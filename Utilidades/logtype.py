@@ -2,9 +2,10 @@
 #  Ian García González
 #  A01706892
 #  Archivo creado el 1/9/2020.
-from enum import Enum
+from enum import Enum, unique
 
 
+@unique
 class LogType(Enum):
     NORMAL = "[\033[92mi\033[0m]"
     ERROR = "[\033[91mError\033[0m]"

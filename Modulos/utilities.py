@@ -5,13 +5,14 @@
 
 from datetime import datetime
 
+from Utilidades.ModuleType import ModuleType
 from modulo import Modulo
 
 
 class Utilidades(Modulo):
 
     def __init__(self, app, nombre):
-        super().__init__(app, nombre)
+        super().__init__(app, nombre, ModuleType.UTILITY)
 
     def log(self, mensaje, tipo):
         print(f"{tipo} {mensaje}")
