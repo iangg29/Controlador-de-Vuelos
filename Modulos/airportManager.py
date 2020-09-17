@@ -7,17 +7,17 @@ from Exceptions.FailedDatabaseConnection import FailedDatabaseConnection
 from Exceptions.InvalidObject import InvalidObject
 from Exceptions.InvalidOption import InvalidOption
 from Exceptions.ZeroResults import ZeroResults
-from Objetos.Aerolinea import Aerolinea
+from Objetos.Aeropuerto import Aeropuerto
 from Utilidades.ModuleType import ModuleType
 from modulo import Modulo
 
 
-class AirlineManager(Modulo):
+class AirportManager(Modulo):
 
     def __init__(self, app, name):
         super().__init__(app, name, ModuleType.DATA)
         self.app = app
-        self.airlines = []
+        self.airports = []
         self.mysqlModule = app.getMySQLManager()
         self.configurationModule = app.getConfiguracion()
 
@@ -28,38 +28,44 @@ class AirlineManager(Modulo):
                                                      self.configurationModule.getDB())
         if not connection: raise FailedDatabaseConnection
         cursor = connection.cursor()
-        query = ("SELECT * FROM Aerolineas")
+        query = ("SELECT * FROM Aeropuertos")
 
         cursor.execute(query)
 
         for x in cursor:
-            self.airlines.append(Aerolinea(x))
+            self.airports.append(Aeropuerto(x))
         cursor.close()
         connection.close()
 
-    def findId(self, id) -> Aerolinea:
+    def findID(self, id) -> Aeropuerto:
         self.app.updateData()
-        for x in self.airlines:
+        for x in self.airports:
             if x.getId() == id:
                 return x
 
-    def create(self, aerolinea):
-        if not aerolinea: raise InvalidObject
+    def findCodigo(self, code) -> Aeropuerto:
+        self.app.updateData()
+        for x in self.airports:
+            if x.getCode().upper() == code.upper():
+                return x
+
+    def create(self, airport):
+        if not airport: raise InvalidObject
         connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
                                                      self.configurationModule.getPassword(),
                                                      self.configurationModule.getHost(),
                                                      self.configurationModule.getDB())
         if not connection: raise FailedDatabaseConnection
         cursor = connection.cursor()
-        query = "INSERT INTO Aerolineas (nombre, codigo) VALUES (%s, %s)"
-        valores = (aerolinea.getName(), aerolinea.getCode())
+        query = ("INSERT INTO Aeropuertos (ciudad, pais, codigo) VALUES (%s, %s, %s)")
+        valores = (airport.getCiudad(), airport.getPais(), airport.getCode())
         cursor.execute(query, valores)
         connection.commit()
         self.log("Nuevo registro creado.")
         self.app.needUpdate(True)
 
-    def edit(self, aerolineaVieja, aerolineaNueva):
-        if not aerolineaVieja and not aerolineaNueva: raise InvalidObject
+    def edit(self, oldAirport, newAirport):
+        if not oldAirport and not newAirport: raise InvalidObject
         connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
                                                      self.configurationModule.getPassword(),
                                                      self.configurationModule.getHost(),
@@ -67,47 +73,44 @@ class AirlineManager(Modulo):
         if not connection: FailedDatabaseConnection
 
         cursor = connection.cursor()
-
-        query = "UPDATE Aerolineas SET nombre = %s, codigo = %s WHERE id = %s"
-        values = (aerolineaNueva.getName(), aerolineaNueva.getCode(), aerolineaVieja.getId())
-
-        cursor.execute(query, values)
-
+        query = ("UPDATE Aeropuertos SET ciudad = %s, pais = %s, codigo = %s WHERE id = %s")
+        valores = (newAirport.getCiudad(), newAirport.getPais(), newAirport.getCode(), oldAirport.getId())
+        cursor.execute(query, valores)
         connection.commit()
         self.log(f"{cursor.rowcount} registro(s) afectados.")
         self.app.needUpdate(True)
 
-    def findCodigo(self, code) -> Aerolinea:
-        self.app.updateData()
-        for x in self.airlines:
-            if x.getCode().upper() == code.upper():
-                return x
-
-    def buscar(self, tipo):
-        if tipo == "ID":
-            id = int(input("Por favor ingresa un id").strip())
-            aerolinea = self.findId(id)
-            if aerolinea:
-                print("----AEROLINEA----")
-                print(f"ID: {aerolinea.getId()}")
-                print(f"Nombre: {aerolinea.getName()}")
-                print(f"Código: {aerolinea.getCode()}")
-                print("-----------------")
+    def find(self, type):
+        if type.upper() == "ID":
+            id = int(input("Por favor inresa el ID: ").strip())
+            airport = self.findID(id)
+            if airport:
+                print("----AEROPUERTO----")
+                print(f"ID: {airport.getId()}")
+                print(f"Ciudad: {airport.getCiudad()}")
+                print(f"Pais: {airport.getPais()}")
+                print(f"Código: {airport.getCode()}")
+                print("------------------")
             else:
                 raise ZeroResults
-        elif tipo == "CODIGO":
-            codigo = str(input("Por favor ingresa un código").strip())
-            aerolinea = self.findCodigo(codigo)
-            if aerolinea:
-                print(aerolinea)
+        elif type.upper() == "CODIGO":
+            codigo = str(input("Por favor ingresa el código: ").strip()).upper()
+            airport = self.findCodigo(codigo)
+            if airport:
+                print("----AEROPUERTO----")
+                print(f"ID: {airport.getId()}")
+                print(f"Ciudad: {airport.getCiudad()}")
+                print(f"Pais: {airport.getPais()}")
+                print(f"Código: {airport.getCode()}")
+                print("------------------")
             else:
                 raise ZeroResults
         else:
             raise InvalidOption
 
-    def delete(self, aerolinea):
-        if not aerolinea: raise InvalidObject
-        sure = str(input(f"¿Estas seguro que deseas eliminar la aerolinea [{aerolinea}]? (S/N) ").strip()).upper()
+    def delete(self, airport):
+        if not airport: raise InvalidObject
+        sure = str(input(f"¿Estas seguro que deseas eliminar el aeropuerto [{airport}]? (S/N) ").strip()).upper()
         if sure == "S":
             connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
                                                          self.configurationModule.getPassword(),
@@ -115,7 +118,7 @@ class AirlineManager(Modulo):
                                                          self.configurationModule.getDB())
             if not connection: raise FailedDatabaseConnection
             cursor = connection.cursor()
-            query = f"DELETE FROM Aerolineas WHERE id='{aerolinea.getId()}'"
+            query = f"DELETE FROM Aeropuertos WHERE id='{airport.getId()}'"
             cursor.execute(query)
             connection.commit()
             self.log(f"{cursor.rowcount} registro(s) afectados.")
@@ -125,10 +128,10 @@ class AirlineManager(Modulo):
 
     def getAll(self):
         self.app.updateData()
-        return self.airlines
+        return self.airports
 
     def clearData(self):
-        self.airlines.clear()
+        self.airports.clear()
 
     def end(self):
         super().end()

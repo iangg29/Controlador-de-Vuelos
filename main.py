@@ -11,11 +11,13 @@ from Exceptions.InvalidOption import InvalidOption
 from Exceptions.ModuleFailedLoading import ModuleFailedLoading
 from Exceptions.ZeroResults import ZeroResults
 from Modulos.airlineManager import AirlineManager
+from Modulos.airportManager import AirportManager
 from Modulos.backupmanager import BackupManager
 from Modulos.configuration import Configuracion
 from Modulos.mysql import Mysql
 from Modulos.utilities import Utilidades
 from Objetos.Aerolinea import Aerolinea
+from Objetos.Aeropuerto import Aeropuerto
 from Utilidades.logtype import LogType
 
 
@@ -30,10 +32,12 @@ class App:
         self.modulos = []
         self.mysql = None
         self.airlineManager = None
+        self.airportManager = None
         self.utilities = None
         self.configuracion = None
         self.backupManager = None
         self.dataRefresh = True
+        self.printedMenu = False
 
     def start(self):
         startTime = self._getTime()
@@ -51,6 +55,7 @@ class App:
 
             # DATA MANAGERS
             self.airlineManager = AirlineManager(self, "AirlineManager")
+            self.airportManager = AirportManager(self, "AirportManager")
             self.backupManager = BackupManager(self, "BackupManager")
         except ModuleFailedLoading:
             self.log("Error al inicializar un módulo.", LogType.SEVERE)
@@ -62,7 +67,8 @@ class App:
         self.log(f"Aplicación iniciada en [{finishTime - startTime}ms].")
         while self.started:
             try:
-                opcion = str(input("Ingresa una opción:  ".strip())).upper().strip()
+                self.menu()
+                opcion = str(input("Ingresa una opción: ").strip()).upper()
                 if opcion == "VUELOS":
                     pass
                 elif opcion == "AEROLINEAS":
@@ -70,22 +76,23 @@ class App:
                     for aerolinea in self.airlineManager.getAll():
                         print(f"- {aerolinea}")
                 elif opcion == "AEROPUERTOS":
-                    pass
+                    print("Los aeropuertos registrados son: ")
+                    for aeropuerto in self.airportManager.getAll():
+                        print(f"{aeropuerto.getId()}- {aeropuerto}")
                 elif opcion == "PASAJEROS":
                     pass
-                elif opcion == "TEST":
-                    self.airlineManager.delete()
                 elif opcion == "BUSCAR":
-                    a = str(input("Qué deseas buscar? (Vuelos/Aerolineas/Pasajeros/Aeropuertos)")).upper().strip()
+                    a = str(input("Qué deseas buscar? (Vuelos/Aerolineas/Pasajeros/Aeropuertos)").strip()).upper()
                     if a == "AEROLINEAS":
-                        tipo = str(input("Qué identificador usarás? (ID/CODIGO)")).upper().strip()
+                        tipo = str(input("Qué identificador usarás? (ID/CODIGO)").strip()).upper()
                         self.airlineManager.buscar(tipo)
                     elif a == "VUELOS":
                         pass
                     elif a == "PASAJEROS":
                         pass
                     elif a == "AEROPUERTOS":
-                        pass
+                        tipo = str(input("Qué identificador usarás? (ID/CODIGO)").strip()).upper()
+                        self.airportManager.find(tipo)
                     else:
                         raise InvalidOption
                 elif opcion == "CREAR" or opcion == "NUEVO":
@@ -101,21 +108,26 @@ class App:
                     elif a == "PASAJERO":
                         pass
                     elif a == "AEROPUERTO":
-                        pass
+                        ciudad = str(input().strip()).capitalize()
+                        pais = str(input().strip()).capitalize()
+                        codigo = str(input().strip()).upper()
+                        airport = Aeropuerto([0, ciudad, pais, codigo])
+                        self.airportManager.create(airport)
                     elif a == "CANCELAR":
                         raise CancelledPayload
                     else:
                         raise InvalidOption
-                elif opcion == "EDITAR":
+                elif opcion == "EDITAR" or opcion == "MODIFICAR":
                     self.log("Para cancelar la petición escribe 'Cancelar'.")
-                    a = str(input("Qué deseas buscar? (Vuelos/Aerolineas/Pasajeros/Aeropuertos)")).upper().strip()
+                    a = str(input("Qué deseas buscar? (Vuelos/Aerolineas/Pasajeros/Aeropuertos)").strip()).upper()
                     if a == "AEROLINEAS":
                         id = int(input("Ingresa el ID de la aerolinea a editar"))
                         aerolineaVieja = self.airlineManager.findId(id)
+                        if not aerolineaVieja: raise ZeroResults
                         nombre = str(input(
-                            f"Ingresa el nuevo nombre de la aerolínea [Actual={aerolineaVieja.getName().upper()}].")).strip()
+                            f"Ingresa el nuevo nombre de la aerolínea [Actual={aerolineaVieja.getName().upper()}].").strip()).capitalize()
                         codigo = str(input(
-                            f"Ingresa el nuevo código de la aerolínea [Actual={aerolineaVieja.getCode().upper()}].")).strip()
+                            f"Ingresa el nuevo código de la aerolínea [Actual={aerolineaVieja.getCode().upper()}].").strip()).upper()
                         aerolineaNueva = Aerolinea([0, nombre, codigo])
                         self.airlineManager.edit(aerolineaVieja, aerolineaNueva)
                     elif a == "VUELOS":
@@ -123,18 +135,51 @@ class App:
                     elif a == "PASAJEROS":
                         pass
                     elif a == "AEROPUERTOS":
-                        pass
+                        id = int(input("Ingresa el ID del aeropuerto a editar"))
+                        oldAirport = self.airportManager.findID(id)
+                        if not oldAirport: raise ZeroResults
+                        ciudad = str(input(
+                            f"Ingresa la nueva ciudad del aeropueto [Actual={oldAirport.getCiudad().upper()}]").strip()).capitalize()
+                        pais = str(input(
+                            f"Ingresa el nuevo pais del aeropuerto [Actual={oldAirport.getPais().upper()}]").strip()).capitalize()
+                        codigo = str(input(
+                            f"Ingresa el nuevo código del aeropuerto [Actual={oldAirport.getCode().upper()}]").strip()).upper()
+                        newAirport = Aeropuerto([0, ciudad, pais, codigo])
+                        self.airportManager.edit(oldAirport, newAirport)
                     elif a == "CANCELAR":
                         raise CancelledPayload
                     else:
                         raise InvalidOption
-                elif opcion == "CONFIGURACION":
+                elif opcion == "BORRAR" or opcion == "ELIMINAR":
+                    self.log("Para cancelar la petición escribe 'Cancelar'.")
+                    a = str(input("Qué deseas eliminar? (Vuelos/Aerolineas/Pasajeros/Aeropuertos)")).upper().strip()
+                    if a == "AEROLINEAS":
+                        id = int(input("Ingresa el ID de la aerolinea a eliminar"))
+                        aerolinea = self.airlineManager.findId(id)
+                        if not aerolinea: raise ZeroResults
+                        self.airlineManager.delete(aerolinea)
+                    elif a == "VUELOS":
+                        pass
+                    elif a == "PASAJEROS":
+                        pass
+                    elif a == "AEROPUERTOS":
+                        id = int(input("Ingresa el ID del aeropuerto a eliminar"))
+                        airport = self.airportManager.findID(id)
+                        if not airport: raise ZeroResults
+                        self.airportManager.delete(airport)
+                    elif a == "CANCELAR":
+                        raise CancelledPayload
+                    else:
+                        raise InvalidOption
+                elif opcion == "CONFIGURACION" or opcion == "CONFIG":
                     self.log("Configuraciones disponibles:")
                     self.log(f"- DEBUG [CURRENT={str(self.debug)}]")
                     a = int(input("Ingresa la configuración que desees cambiar:"))
                     if a == 1:
                         self.debug = not self.debug
                         print("La configuración ha sido cambiada!")
+                    else:
+                        raise InvalidOption
                 elif opcion == "BACKUP":
                     self.backupManager.airlineBackup()
                 elif opcion == "SALIR":
@@ -154,9 +199,12 @@ class App:
             except CancelledPayload:
                 self.log("Se ha cancelado la petición.", LogType.SEVERE)
             except FailedDatabaseConnection:
+                print("\n")
                 self.log("No se ha podido establecer conexión con la base de datos.", LogType.SEVERE)
                 self.log("Cerrando aplicación para evitar futuros errores.", LogType.SEVERE)
                 self.stop()
+            except ValueError:
+                self.log("Valor inválido", LogType.SEVERE)
 
     def stop(self):
         self.started = False
@@ -175,6 +223,22 @@ class App:
             if self.debug: self.log("Datos actualizados.")
             self.needUpdate(False)
 
+    def menu(self):
+        if not self.printedMenu:
+            print("-----[ MENU ]-------")
+            print("- Aeropuertos")
+            print("- Aerolineas")
+            print("- Pasajeros")
+            print("- Vuelos")
+            print("- Buscar")
+            print("- Editar")
+            print("- Eliminar")
+            print("- Backup")
+            print("- Configuracion")
+            print("- Salir")
+            print("--------------------")
+            self.printedMenu = True
+
     def needUpdate(self, bool):
         self.dataRefresh = bool
 
@@ -189,12 +253,6 @@ class App:
 
     def log(self, mensaje, tipo=LogType.NORMAL):
         print(f"{tipo} {mensaje}")
-
-    def getFlights(self):
-        return self.flights
-
-    def newFlight(self, flight):
-        self.flights.append(flight)
 
     def getAirlineManager(self) -> AirlineManager:
         return self.airlineManager
@@ -213,7 +271,7 @@ class App:
 
 
 def main():
-    app = App("Sistema de aeropuerto", True)
+    app = App("Sistema de aeropuerto", False)
     app.start()
 
 
