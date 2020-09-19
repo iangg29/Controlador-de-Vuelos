@@ -15,7 +15,9 @@ from Modulos.airportManager import AirportManager
 from Modulos.backupmanager import BackupManager
 from Modulos.configuration import Configuracion
 from Modulos.mysql import Mysql
+from Modulos.passengerManager import PassengerManager
 from Modulos.utilities import Utilidades
+from Objetos import Pasajero
 from Objetos.Aerolinea import Aerolinea
 from Objetos.Aeropuerto import Aeropuerto
 from Utilidades.logtype import LogType
@@ -33,6 +35,7 @@ class App:
         self.mysql = None
         self.airlineManager = None
         self.airportManager = None
+        self.passengerManager = None
         self.utilities = None
         self.configuracion = None
         self.backupManager = None
@@ -40,7 +43,7 @@ class App:
         self.printedMenu = False
 
     def start(self):
-        startTime = self._getTime()
+        startTime = self.__getTime()
         self.started = True
 
         self.log(f"{self.name} creado por {self.author}")
@@ -48,7 +51,6 @@ class App:
 
         try:
             # UTILITIES
-
             self.mysql = Mysql(self, "MySQL")
             self.utilities = Utilidades(self, "Utilidades")
             self.configuracion = Configuracion(self, "Configuración")
@@ -56,6 +58,7 @@ class App:
             # DATA MANAGERS
             self.airlineManager = AirlineManager(self, "AirlineManager")
             self.airportManager = AirportManager(self, "AirportManager")
+            self.passengerManager = PassengerManager(self, "PassengerManager")
             self.backupManager = BackupManager(self, "BackupManager")
         except ModuleFailedLoading:
             self.log("Error al inicializar un módulo.", LogType.SEVERE)
@@ -63,7 +66,7 @@ class App:
 
         self.updateData()
 
-        finishTime = self._getTime()
+        finishTime = self.__getTime()
         self.log(f"Aplicación iniciada en [{finishTime - startTime}ms].")
         while self.started:
             try:
@@ -80,7 +83,9 @@ class App:
                     for aeropuerto in self.airportManager.getAll():
                         print(f"{aeropuerto.getId()}- {aeropuerto}")
                 elif opcion == "PASAJEROS":
-                    pass
+                    print("Los pasajeros registrados son: ")
+                    for pasajero in self.passengerManager.getAll():
+                        print(f"{pasajero.getId()}- {pasajero}")
                 elif opcion == "BUSCAR":
                     a = str(input("Qué deseas buscar? (Vuelos/Aerolineas/Pasajeros/Aeropuertos)").strip()).upper()
                     if a == "AEROLINEAS":
@@ -89,7 +94,8 @@ class App:
                     elif a == "VUELOS":
                         pass
                     elif a == "PASAJEROS":
-                        pass
+                        tipo = str(input("Que identificador usarás? (ID/NOMBRE)").strip()).upper()
+                        self.passengerManager.buscar(tipo)
                     elif a == "AEROPUERTOS":
                         tipo = str(input("Qué identificador usarás? (ID/CODIGO)").strip()).upper()
                         self.airportManager.find(tipo)
@@ -106,7 +112,12 @@ class App:
                     elif a == "VUELO":
                         pass
                     elif a == "PASAJERO":
-                        pass
+                        nombre = str(input("Ingresa el nombre del pasajero")).strip()
+                        email = str(input("Ingresa el email del pasajero")).strip()
+                        celular = str(input("Ingresa el celular del pasajero")).strip()
+                        edad = str(input("Ingresa la edad del pasajero")).strip()
+                        pasajero = Pasajero([0, nombre.capitalize(), email.lower(), celular, edad, "0"])
+                        self.passengerManager.create(pasajero)
                     elif a == "AEROPUERTO":
                         ciudad = str(input().strip()).capitalize()
                         pais = str(input().strip()).capitalize()
@@ -161,7 +172,10 @@ class App:
                     elif a == "VUELOS":
                         pass
                     elif a == "PASAJEROS":
-                        pass
+                        id = int(input("Ingresa el ID del pasajero a eliminar"))
+                        pasajero = self.passengerManager.findId(id)
+                        if not pasajero: raise ZeroResults
+                        self.passengerManager.delete(pasajero)
                     elif a == "AEROPUERTOS":
                         id = int(input("Ingresa el ID del aeropuerto a eliminar"))
                         airport = self.airportManager.findID(id)
@@ -171,6 +185,8 @@ class App:
                         raise CancelledPayload
                     else:
                         raise InvalidOption
+                elif opcion == "MENU":
+                    self.menu(True)
                 elif opcion == "CONFIGURACION" or opcion == "CONFIG":
                     self.log("Configuraciones disponibles:")
                     self.log(f"- DEBUG [CURRENT={str(self.debug)}]")
@@ -223,8 +239,8 @@ class App:
             if self.debug: self.log("Datos actualizados.")
             self.needUpdate(False)
 
-    def menu(self):
-        if not self.printedMenu:
+    def menu(self, forced=False):
+        if not self.printedMenu or forced:
             print("-----[ MENU ]-------")
             print("- Aeropuertos")
             print("- Aerolineas")
@@ -248,7 +264,7 @@ class App:
     def loadModulos(self, modulo):
         self.modulos.append(modulo)
 
-    def _getTime(self) -> int:
+    def __getTime(self) -> int:
         return int(round(time.time() * 1000))
 
     def log(self, mensaje, tipo=LogType.NORMAL):

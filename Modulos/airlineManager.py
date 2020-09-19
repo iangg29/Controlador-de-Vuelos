@@ -59,12 +59,12 @@ class AirlineManager(Modulo):
         self.app.needUpdate(True)
 
     def edit(self, aerolineaVieja, aerolineaNueva):
-        if not aerolineaVieja and not aerolineaNueva: raise InvalidObject
+        if not aerolineaVieja or not aerolineaNueva: raise InvalidObject
         connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
                                                      self.configurationModule.getPassword(),
                                                      self.configurationModule.getHost(),
                                                      self.configurationModule.getDB())
-        if not connection: FailedDatabaseConnection
+        if not connection: raise FailedDatabaseConnection
 
         cursor = connection.cursor()
 
@@ -99,7 +99,11 @@ class AirlineManager(Modulo):
             codigo = str(input("Por favor ingresa un código").strip())
             aerolinea = self.findCodigo(codigo)
             if aerolinea:
-                print(aerolinea)
+                print("----AEROLINEA----")
+                print(f"ID: {aerolinea.getId()}")
+                print(f"Nombre: {aerolinea.getName()}")
+                print(f"Código: {aerolinea.getCode()}")
+                print("-----------------")
             else:
                 raise ZeroResults
         else:
