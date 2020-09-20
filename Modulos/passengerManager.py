@@ -2,6 +2,7 @@
 #  Ian García González
 #  A01706892
 #  Archivo creado el 8/9/2020.
+from Exceptions.CancelledPayload import CancelledPayload
 from Exceptions.FailedDatabaseConnection import FailedDatabaseConnection
 from Exceptions.InvalidObject import InvalidObject
 from Exceptions.InvalidOption import InvalidOption
@@ -17,8 +18,6 @@ class PassengerManager(Modulo):
         super().__init__(app, name, ModuleType.DATA)
         self.app = app
         self.passengers = []
-        self.mysqlManager = app.getMySQLManager()
-        self.configurationManager = app.getConfiguracion()
 
     def loadData(self):
         connection = self.initConnection()
@@ -106,7 +105,7 @@ class PassengerManager(Modulo):
 
     def delete(self, pasajero):
         if not pasajero: raise InvalidObject
-        sure = str(input(f"¿Estas seguro que deseas eliminar la aerolinea [{aerolinea}]? (S/N) ").strip()).upper()
+        sure = str(input(f"¿Estas seguro que deseas eliminar la aerolinea [{pasajero}]? (S/N) ").strip()).upper()
         if sure == "S":
             connection = self.initConnection()
             if not connection: raise FailedDatabaseConnection
@@ -129,9 +128,3 @@ class PassengerManager(Modulo):
     def end(self):
         super().end()
         self.clearData()
-
-    def initConnection(self):
-        return self.mysqlManager.initConnection(self.configurationManager.getUser(),
-                                                self.configurationManager.getPassword(),
-                                                self.configurationManager.getHost(),
-                                                self.configurationManager.getDB())

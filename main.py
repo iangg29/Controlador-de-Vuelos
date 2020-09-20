@@ -14,12 +14,14 @@ from Modulos.airlineManager import AirlineManager
 from Modulos.airportManager import AirportManager
 from Modulos.backupmanager import BackupManager
 from Modulos.configuration import Configuracion
+from Modulos.flightsManager import FlightManager
 from Modulos.mysql import Mysql
 from Modulos.passengerManager import PassengerManager
 from Modulos.utilities import Utilidades
-from Objetos import Pasajero
 from Objetos.Aerolinea import Aerolinea
 from Objetos.Aeropuerto import Aeropuerto
+from Objetos.Pasajero import Pasajero
+from Objetos.Vuelo import Vuelo
 from Utilidades.logtype import LogType
 
 
@@ -36,6 +38,7 @@ class App:
         self.airlineManager = None
         self.airportManager = None
         self.passengerManager = None
+        self.flightsManager = None
         self.utilities = None
         self.configuracion = None
         self.backupManager = None
@@ -59,6 +62,7 @@ class App:
             self.airlineManager = AirlineManager(self, "AirlineManager")
             self.airportManager = AirportManager(self, "AirportManager")
             self.passengerManager = PassengerManager(self, "PassengerManager")
+            self.flightsManager = FlightManager(self, "FlightsManager")
             self.backupManager = BackupManager(self, "BackupManager")
         except ModuleFailedLoading:
             self.log("Error al inicializar un módulo.", LogType.SEVERE)
@@ -73,7 +77,9 @@ class App:
                 self.menu()
                 opcion = str(input("Ingresa una opción: ").strip()).upper()
                 if opcion == "VUELOS":
-                    pass
+                    print("Los vuelos registrados son: ")
+                    for vuelo in self.flightsManager.getAll():
+                        print(f"- {vuelo}")
                 elif opcion == "AEROLINEAS":
                     print("Las aerolineas registradas son: ")
                     for aerolinea in self.airlineManager.getAll():
@@ -92,7 +98,7 @@ class App:
                         tipo = str(input("Qué identificador usarás? (ID/CODIGO)").strip()).upper()
                         self.airlineManager.buscar(tipo)
                     elif a == "VUELOS":
-                        pass
+                        self.flightsManager.buscar()
                     elif a == "PASAJEROS":
                         tipo = str(input("Que identificador usarás? (ID/NOMBRE)").strip()).upper()
                         self.passengerManager.buscar(tipo)
@@ -110,7 +116,31 @@ class App:
                         aerolinea = Aerolinea([0, nombre.capitalize(), codigo.upper()])
                         self.airlineManager.create(aerolinea)
                     elif a == "VUELO":
-                        pass
+                        # ORIGEN, DESTINO, CAPACIDAD, DURACION, TIPO, AEROLINEA, PASAJEROS
+                        origen = self.airportManager.findCodigo(
+                            str(input("Ingresa el codigo del aeropuerto de origen").strip()).upper())
+                        destino = self.airportManager.findCodigo(
+                            str(input("Ingresa el codigo del aeropuerto de destino").strip()).upper())
+                        capacidad = int(input("Ingresa la capacidad que tendrá el vuelo ").strip())
+                        duracion = int(input("Ingrea la duración del vuelo en minutos ").strip())
+                        tipo = ("INT", "NAC")[origen.getPais() == destino.getPais()]
+                        aerolinea = self.airlineManager.findCodigo(
+                            str(input("Ingresa el codigo de la aerolinea ").strip()).upper())
+                        pasajeros = "0"
+
+                        if not origen or not destino or not capacidad or not duracion or not tipo or not aerolinea or not pasajeros: raise InvalidObject
+
+                        vuelo = Vuelo([])
+                        vuelo.setOrigen(origen)
+                        vuelo.setDestino(destino)
+                        vuelo.setCapacidad(capacidad)
+                        vuelo.setDuracion(duracion)
+                        vuelo.setTipo(tipo)
+                        vuelo.setAerolinea(aerolinea)
+                        vuelo.setPasajeros(pasajeros)
+
+                        self.flightsManager.create(vuelo)
+
                     elif a == "PASAJERO":
                         nombre = str(input("Ingresa el nombre del pasajero")).strip()
                         email = str(input("Ingresa el email del pasajero")).strip()
@@ -287,7 +317,7 @@ class App:
 
 
 def main():
-    app = App("Sistema de aeropuerto", False)
+    app = App("Sistema de aeropuerto", True)
     app.start()
 
 

@@ -14,6 +14,8 @@ class Modulo:
         self.app = app
         self.name = name
         self.type = type
+        self.mysqlManager = app.getMySQLManager()
+        self.configManager = app.getConfiguracion()
         if app.debug: self.log(f"Iniciando módulo [{name.upper()}].", LogType.NORMAL)
         app.loadModulos(self)
 
@@ -34,3 +36,9 @@ class Modulo:
 
     def isData(self) -> bool:
         return self.type == ModuleType.DATA
+
+    def initConnection(self):
+        return self.mysqlManager.initConnection(self.configManager.getUser(),
+                                                self.configManager.getPassword(),
+                                                self.configManager.getHost(),
+                                                self.configManager.getDB())
