@@ -9,7 +9,7 @@
 
 ![Version](https://img.shields.io/badge/Version-1.3-blue)
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/license-GNU-blue)](https://opensource.org/licenses/GPL-3.0)
 
 ## Instalación
 
