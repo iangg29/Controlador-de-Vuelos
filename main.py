@@ -4,6 +4,8 @@
 #  Archivo creado el 1/9/2020.
 import time
 
+import requests
+
 from Exceptions.CancelledPayload import CancelledPayload
 from Exceptions.FailedDatabaseConnection import FailedDatabaseConnection
 from Exceptions.InvalidObject import InvalidObject
@@ -27,7 +29,7 @@ from Utilidades.logtype import LogType
 
 class App:
     author = "Ian García"
-    version = "1.2"
+    version = None
 
     def __init__(self, name, debug):
         self.name = name
@@ -50,7 +52,6 @@ class App:
         self.started = True
 
         self.log(f"{self.name} creado por {self.author}")
-        self.log(f"Version: {self.version}")
 
         try:
             # UTILITIES
@@ -69,7 +70,9 @@ class App:
             exit()
 
         self.updateData()
+        self.__getVersion()
 
+        self.log(f"Version: {str(self.version)}")
         finishTime = self.__getTime()
         self.log(f"Aplicación iniciada en [{finishTime - startTime}ms].")
         while self.started:
@@ -228,6 +231,8 @@ class App:
                         raise InvalidOption
                 elif opcion == "BACKUP":
                     self.backupManager.airlineBackup()
+                elif opcion == "VERSION":
+                    self.__getVersion()
                 elif opcion == "SALIR":
                     self.stop()
                 else:
@@ -294,6 +299,15 @@ class App:
     def loadModulos(self, modulo):
         self.modulos.append(modulo)
 
+    def __getVersion(self):
+        response = requests.get("https://api.github.com/repos/iangg29/ITESM-ProyectoPython/releases/latest",
+                                {'owner': 'iangg29', 'repo': 'ITESM-ProyectoPython'})
+        if response.status_code == 200:
+            json = response.json()
+            self.version = json['tag_name']
+        else:
+            self.log(response.status_code, LogType.ERROR)
+
     def __getTime(self) -> int:
         return int(round(time.time() * 1000))
 
@@ -317,7 +331,7 @@ class App:
 
 
 def main():
-    app = App("Sistema de aeropuerto", True)
+    app = App("Sistema de aeropuerto", False)
     app.start()
 
 

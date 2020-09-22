@@ -27,7 +27,6 @@ class FlightManager(Modulo):
         cursor.execute(query)
 
         for x in cursor:
-            print(x)
             self.flights.append(Vuelo(x))
 
         cursor.close()
