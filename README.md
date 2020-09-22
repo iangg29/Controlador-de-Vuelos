@@ -26,7 +26,7 @@
 
 ## License
 
-Este proyecto está bajo la licencia MIT.
+Este proyecto está bajo la licencia GNU.
 
 ## Links
 
