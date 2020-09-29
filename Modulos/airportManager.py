@@ -22,10 +22,7 @@ class AirportManager(Modulo):
         self.configurationModule = app.getConfiguracion()
 
     def loadData(self):
-        connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
-                                                     self.configurationModule.getPassword(),
-                                                     self.configurationModule.getHost(),
-                                                     self.configurationModule.getDB())
+        connection = self.initConnection()
         if not connection: raise FailedDatabaseConnection
         cursor = connection.cursor()
         query = ("SELECT * FROM Aeropuertos")
@@ -33,28 +30,21 @@ class AirportManager(Modulo):
         cursor.execute(query)
 
         for x in cursor:
-            self.airports.append(Aeropuerto(x))
+            self.airports.append(Aeropuerto(x[0], x[1], x[2], x[3]))
         cursor.close()
         connection.close()
 
-    def findID(self, id) -> Aeropuerto:
+    def findID(self, id) -> list:
         self.app.updateData()
-        for x in self.airports:
-            if x.getId() == id:
-                return x
+        return list(filter(lambda airport: airport.getId() == id, self.airports))
 
-    def findCodigo(self, code) -> Aeropuerto:
+    def findCodigo(self, code) -> list:
         self.app.updateData()
-        for x in self.airports:
-            if x.getCode().upper() == code.upper():
-                return x
+        return list(filter(lambda airport: airport.getCode().upper() == code.upper(), self.airports))
 
     def create(self, airport):
         if not airport: raise InvalidObject
-        connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
-                                                     self.configurationModule.getPassword(),
-                                                     self.configurationModule.getHost(),
-                                                     self.configurationModule.getDB())
+        connection = self.initConnection()
         if not connection: raise FailedDatabaseConnection
         cursor = connection.cursor()
         query = ("INSERT INTO Aeropuertos (ciudad, pais, codigo) VALUES (%s, %s, %s)")
@@ -66,10 +56,7 @@ class AirportManager(Modulo):
 
     def edit(self, oldAirport, newAirport):
         if not oldAirport and not newAirport: raise InvalidObject
-        connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
-                                                     self.configurationModule.getPassword(),
-                                                     self.configurationModule.getHost(),
-                                                     self.configurationModule.getDB())
+        connection = self.initConnection()
         if not connection: FailedDatabaseConnection
 
         cursor = connection.cursor()
@@ -82,27 +69,17 @@ class AirportManager(Modulo):
 
     def find(self, type):
         if type.upper() == "ID":
-            id = int(input("Por favor inresa el ID: ").strip())
-            airport = self.findID(id)
-            if airport:
-                print("----AEROPUERTO----")
-                print(f"ID: {airport.getId()}")
-                print(f"Ciudad: {airport.getCiudad()}")
-                print(f"Pais: {airport.getPais()}")
-                print(f"Código: {airport.getCode()}")
-                print("------------------")
+            airports = self.findID(int(input("Por favor inresa el ID: ").strip()))
+            if len(airports) > 0:
+                for airport in airports:
+                    airport.printDetail()
             else:
                 raise ZeroResults
         elif type.upper() == "CODIGO":
-            codigo = str(input("Por favor ingresa el código: ").strip()).upper()
-            airport = self.findCodigo(codigo)
-            if airport:
-                print("----AEROPUERTO----")
-                print(f"ID: {airport.getId()}")
-                print(f"Ciudad: {airport.getCiudad()}")
-                print(f"Pais: {airport.getPais()}")
-                print(f"Código: {airport.getCode()}")
-                print("------------------")
+            airports = self.findCodigo(str(input("Por favor ingresa el código: ").strip()).upper())
+            if len(airports) > 0:
+                for airport in airports:
+                    airport.printDetail()
             else:
                 raise ZeroResults
         else:
@@ -112,10 +89,7 @@ class AirportManager(Modulo):
         if not airport: raise InvalidObject
         sure = str(input(f"¿Estas seguro que deseas eliminar el aeropuerto [{airport}]? (S/N) ").strip()).upper()
         if sure == "S":
-            connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
-                                                         self.configurationModule.getPassword(),
-                                                         self.configurationModule.getHost(),
-                                                         self.configurationModule.getDB())
+            connection = self.initConnection()
             if not connection: raise FailedDatabaseConnection
             cursor = connection.cursor()
             query = f"DELETE FROM Aeropuertos WHERE id='{airport.getId()}'"

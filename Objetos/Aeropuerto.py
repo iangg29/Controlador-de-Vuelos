@@ -5,11 +5,11 @@
 
 class Aeropuerto:
 
-    def __init__(self, objeto):
-        self.id = objeto[0]
-        self.ciudad = objeto[1]
-        self.pais = objeto[2]
-        self.codigo = objeto[3]
+    def __init__(self, id, ciudad, pais, codigo):
+        self.id = id
+        self.ciudad = ciudad
+        self.pais = pais
+        self.codigo = codigo
 
     def __str__(self) -> str:
         return f"{self.ciudad}, {self.pais} [{self.codigo}]"
@@ -25,3 +25,11 @@ class Aeropuerto:
 
     def getCode(self) -> str:
         return self.codigo
+
+    def printDetail(self):
+        print("----AEROPUERTO----")
+        print(f"ID: {self.getId()}")
+        print(f"Ciudad: {self.getCiudad()}")
+        print(f"Pais: {self.getPais()}")
+        print(f"Código: {self.getCode()}")
+        print("------------------")

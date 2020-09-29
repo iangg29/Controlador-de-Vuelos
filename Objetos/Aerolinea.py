@@ -5,10 +5,10 @@
 
 class Aerolinea:
 
-    def __init__(self, objeto):
-        self.id = objeto[0]
-        self.name = objeto[1]
-        self.clave = objeto[2]
+    def __init__(self, id, name, clave):
+        self.id = id
+        self.name = name
+        self.clave = clave
 
     def __str__(self):
         return f"{self.id} {self.name} [{self.clave}]"
@@ -21,3 +21,10 @@ class Aerolinea:
 
     def getCode(self) -> str:
         return self.clave
+
+    def printDetail(self):
+        print("----AEROLINEA----")
+        print(f"ID: {self.getId()}")
+        print(f"Nombre: {self.getName()}")
+        print(f"Código: {self.getCode()}")
+        print("-----------------")

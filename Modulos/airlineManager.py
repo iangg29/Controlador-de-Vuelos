@@ -22,10 +22,7 @@ class AirlineManager(Modulo):
         self.configurationModule = app.getConfiguracion()
 
     def loadData(self):
-        connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
-                                                     self.configurationModule.getPassword(),
-                                                     self.configurationModule.getHost(),
-                                                     self.configurationModule.getDB())
+        connection = self.initConnection()
         if not connection: raise FailedDatabaseConnection
         cursor = connection.cursor()
         query = ("SELECT * FROM Aerolineas")
@@ -33,22 +30,17 @@ class AirlineManager(Modulo):
         cursor.execute(query)
 
         for x in cursor:
-            self.airlines.append(Aerolinea(x))
+            self.airlines.append(Aerolinea(x[0], x[1], x[2]))
         cursor.close()
         connection.close()
 
-    def findId(self, id) -> Aerolinea:
+    def findId(self, id) -> list:
         self.app.updateData()
-        for x in self.airlines:
-            if x.getId() == id:
-                return x
+        return list(filter(lambda aerolinea: aerolinea.getId() == id, self.airlines))
 
     def create(self, aerolinea):
         if not aerolinea: raise InvalidObject
-        connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
-                                                     self.configurationModule.getPassword(),
-                                                     self.configurationModule.getHost(),
-                                                     self.configurationModule.getDB())
+        connection = self.initConnection()
         if not connection: raise FailedDatabaseConnection
         cursor = connection.cursor()
         query = "INSERT INTO Aerolineas (nombre, codigo) VALUES (%s, %s)"
@@ -60,10 +52,7 @@ class AirlineManager(Modulo):
 
     def edit(self, aerolineaVieja, aerolineaNueva):
         if not aerolineaVieja or not aerolineaNueva: raise InvalidObject
-        connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
-                                                     self.configurationModule.getPassword(),
-                                                     self.configurationModule.getHost(),
-                                                     self.configurationModule.getDB())
+        connection = self.initConnection()
         if not connection: raise FailedDatabaseConnection
 
         cursor = connection.cursor()
@@ -77,33 +66,23 @@ class AirlineManager(Modulo):
         self.log(f"{cursor.rowcount} registro(s) afectados.")
         self.app.needUpdate(True)
 
-    def findCodigo(self, code) -> Aerolinea:
+    def findCodigo(self, code) -> list:
         self.app.updateData()
-        for x in self.airlines:
-            if x.getCode().upper() == code.upper():
-                return x
+        return list(filter(lambda aerolinea: aerolinea.getCode().upper() == code.upper(), self.airlines))
 
     def buscar(self, tipo):
         if tipo == "ID":
-            id = int(input("Por favor ingresa un id").strip())
-            aerolinea = self.findId(id)
-            if aerolinea:
-                print("----AEROLINEA----")
-                print(f"ID: {aerolinea.getId()}")
-                print(f"Nombre: {aerolinea.getName()}")
-                print(f"Código: {aerolinea.getCode()}")
-                print("-----------------")
+            aerolineas = self.findId(int(input("Por favor ingresa un id").strip()))
+            if len(aerolineas) > 0:
+                for aerolinea in aerolineas:
+                    aerolinea.printDetail()
             else:
                 raise ZeroResults
         elif tipo == "CODIGO":
-            codigo = str(input("Por favor ingresa un código").strip())
-            aerolinea = self.findCodigo(codigo)
-            if aerolinea:
-                print("----AEROLINEA----")
-                print(f"ID: {aerolinea.getId()}")
-                print(f"Nombre: {aerolinea.getName()}")
-                print(f"Código: {aerolinea.getCode()}")
-                print("-----------------")
+            aerolineas = self.findCodigo(str(input("Por favor ingresa un código").strip()))
+            if len(aerolineas) > 0:
+                for aerolinea in aerolineas:
+                    aerolinea.printDetail()
             else:
                 raise ZeroResults
         else:
@@ -113,10 +92,7 @@ class AirlineManager(Modulo):
         if not aerolinea: raise InvalidObject
         sure = str(input(f"¿Estas seguro que deseas eliminar la aerolinea [{aerolinea}]? (S/N) ").strip()).upper()
         if sure == "S":
-            connection = self.mysqlModule.initConnection(self.configurationModule.getUser(),
-                                                         self.configurationModule.getPassword(),
-                                                         self.configurationModule.getHost(),
-                                                         self.configurationModule.getDB())
+            connection = self.initConnection()
             if not connection: raise FailedDatabaseConnection
             cursor = connection.cursor()
             query = f"DELETE FROM Aerolineas WHERE id='{aerolinea.getId()}'"

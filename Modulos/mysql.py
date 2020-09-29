@@ -32,48 +32,5 @@ class Mysql(Modulo):
                 self.log(err, LogType.SEVERE)
                 exit()
 
-    def getData(self, configuracion):
-        self.log("[SQL] Cargando datos ...", LogType.NORMAL)
-        connection = self.initConnection(configuracion.getUser(), configuracion.getPassword(), configuracion.getHost(),
-                                         configuracion.getDB())
-        if not connection: return
-        self.log("[SQL] La conexión con la base de datos fue exitosa.", LogType.NORMAL)
-        cursor = connection.cursor()
-        query = (
-            "SELECT * FROM Vuelos INNER JOIN Aerolineas ON Vuelos.`aerolinea` = Aerolineas.`id` INNER JOIN Aeropuertos AS Aeropuerto1 ON Vuelos.`origen` = Aeropuerto1.`id` INNER JOIN Aeropuertos AS Aeropuerto2 ON  Vuelos.`destino` = Aeropuerto2.`id` INNER JOIN Pasajeros ON Vuelos.`pasajeros`= Pasajeros.`id`")
-
-        cursor.execute(query)
-
-        for x in cursor:
-            self.flights.append(x)
-        cursor.close()
-        cursor = connection.cursor()
-        query = ("SELECT * FROM Aerolineas")
-        cursor.execute(query)
-
-        for x in cursor:
-            self.airlines.append(x)
-
-        self.log("[SQL] Datos cargados correctamente.", LogType.NORMAL)
-        cursor.close()
-        connection.close()
-
     def getConn(self):
         return self.connection
-
-    def getFlights(self):
-        print("\n")
-        print("Los vuelos registrados actualmente son:")
-        for vuelo in self.flights:
-            self.app.newFlight(Vuelo(vuelo[0], vuelo[12], vuelo[16], vuelo[20], vuelo[9], vuelo))
-        '''print(
-            f"- Vuelo #{i[0]} [{i[10]}{i[0]}] Origen: {i[12]}({i[14]}), Destino: {i[16]}({i[18]}). Operado por {i[9]}.")
-        print("Para más información del vuelo, ingrese el comando \"vuelo #id\".")
-        print("\n")'''
-
-    def getAirlines(self):
-        print("\n")
-        print("Las aerolineas registradas actualmente son:")
-        for aerolinea in self.airlines:
-            print(f"- {aerolinea[1]} [{aerolinea[2]}].")
-        print("\n")

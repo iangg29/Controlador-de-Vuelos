@@ -23,26 +23,22 @@ class PassengerManager(Modulo):
         connection = self.initConnection()
         if not connection: raise FailedDatabaseConnection
         cursor = connection.cursor()
-        query = ("SELECT * FROM Pasajeros LEFT OUTER JOIN  Vuelos V on V.id = Pasajeros.vuelos")
+        query = ("SELECT * FROM Pasajeros")
         cursor.execute(query)
 
         for x in cursor:
-            self.passengers.append(Pasajero(x))
+            self.passengers.append(Pasajero(x[0], x[1], x[2], x[3], x[4], x[5]))
 
         cursor.close()
         connection.close()
 
-    def findId(self, id) -> Pasajero:
+    def findId(self, id) -> list:
         self.app.updateData()
-        for x in self.passengers:
-            if x.getId() == id:
-                return x
+        return list(filter(lambda passenger: passenger.getId() == id, self.passengers))
 
     def findNombre(self, nombre) -> Pasajero:
         self.app.updateData()
-        for x in self.passengers:
-            if x.getName().upper() == nombre.upper():
-                return x
+        return list(filter(lambda passenger: passenger.getName().upper() == nombre.upper(), self.passengers))
 
     def create(self, pasajero):
         if not pasajero: raise InvalidObject
@@ -73,31 +69,17 @@ class PassengerManager(Modulo):
 
     def buscar(self, tipo):
         if tipo == "ID":
-            id = int(input("Por favor ingresa un id ").strip())
-            pasajero = self.findId(id)
-            if pasajero:
-                print("---- PASAJERO ----")
-                print(f"ID: {pasajero.getId()}")
-                print(f"Nombre: {pasajero.getName()}")
-                print(f"Email: {pasajero.getEmail()}")
-                print(f"Celular: {pasajero.getCelular()}")
-                print(f"Edad: {pasajero.getEdad()}")
-                print(f"Vuelos: {pasajero.getVuelos()}")
-                print("------------------")
+            pasajeros = self.findId(int(input("Por favor ingresa un id ").strip()))
+            if len(pasajeros) > 0:
+                for pasajero in pasajeros:
+                    pasajero.printDetail()
             else:
                 raise ZeroResults
         elif tipo == "NOMBRE":
-            nombre = str(input("Por favor ingresa el nombre del pasajero: ").strip())
-            pasajero = self.findNombre(nombre)
-            if pasajero:
-                print("---- PASAJERO ----")
-                print(f"ID: {pasajero.getId()}")
-                print(f"Nombre: {pasajero.getName()}")
-                print(f"Email: {pasajero.getEmail()}")
-                print(f"Celular: {pasajero.getCelular()}")
-                print(f"Edad: {pasajero.getEdad()}")
-                print(f"Vuelos: {pasajero.getVuelos()}")
-                print("------------------")
+            pasajeros = self.findNombre(str(input("Por favor ingresa el nombre del pasajero: ").strip()))
+            if len(pasajeros) > 0:
+                for pasajero in pasajeros:
+                    pasajero.printDetail()
             else:
                 raise ZeroResults
         else:

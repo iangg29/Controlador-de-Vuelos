@@ -23,35 +23,26 @@ class FlightManager(Modulo):
         if not connection: raise FailedDatabaseConnection
         cursor = connection.cursor()
         query = (
-            "SELECT * FROM Vuelos INNER JOIN Aerolineas ON Vuelos.`aerolinea` = Aerolineas.`id` INNER JOIN Aeropuertos AS Aeropuerto1 ON Vuelos.`origen` = Aeropuerto1.`id` INNER JOIN Aeropuertos AS Aeropuerto2 ON  Vuelos.`destino` = Aeropuerto2.`id` INNER JOIN Pasajeros ON Vuelos.`pasajeros`= Pasajeros.`id`")
+            "SELECT * FROM Vuelos")
         cursor.execute(query)
-
+        self.app.needUpdate(False)
         for x in cursor:
-            self.flights.append(Vuelo(x))
-
+            self.flights.append(
+                Vuelo(x[0], self.app.getAirportManager().findID(x[1])[0], self.app.getAirportManager().findID(x[2])[0],
+                      x[3], x[4], x[5], self.app.getAirlineManager().findId(x[6])[0], x[7]))
+        self.app.needUpdate(True)
         cursor.close()
         connection.close()
 
-    def find(self, id) -> Vuelo:
+    def find(self, id) -> list:
         self.app.updateData()
-        for x in self.flights:
-            if x.getId() == id:
-                return x
+        return list(filter(lambda vuelo: vuelo.getId() == id, self.flights))
 
     def buscar(self):
-        id = int(input("Por favor ingresa un id ").strip())
-        vuelo = self.find(id)
-        if vuelo:
-            print("---- VUELO ----")
-            print(f"ID: {vuelo.getId()}")
-            print(f"Origen: {vuelo.getOrigen()}")
-            print(f"Destino: {vuelo.getDestino()}")
-            print(f"Capacidad: {vuelo.getCapacidad()}")
-            print(f"Duración: {vuelo.getDuracion()}")
-            print(f"Tipo: {('NACIONAL', 'INTERNACIONAL')[vuelo.getTipo() == 'INT']}")
-            print(f"Aerolinea: {vuelo.getAerolinea()}")
-            print(f"Pasajeros: {vuelo.getPasajeros()}")
-            print("------------------")
+        vuelos = self.find(int(input("Por favor ingresa un id ").strip()))
+        if len(vuelos) > 0:
+            for vuelo in vuelos:
+                vuelo.printDetail()
         else:
             raise ZeroResults
 

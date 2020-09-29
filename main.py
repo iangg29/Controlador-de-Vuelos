@@ -166,13 +166,13 @@ class App:
                     a = str(input("Qué deseas buscar? (Vuelos/Aerolineas/Pasajeros/Aeropuertos)").strip()).upper()
                     if a == "AEROLINEAS":
                         id = int(input("Ingresa el ID de la aerolinea a editar"))
-                        aerolineaVieja = self.airlineManager.findId(id)
+                        aerolineaVieja = self.airlineManager.findId(id)[0]
                         if not aerolineaVieja: raise ZeroResults
                         nombre = str(input(
                             f"Ingresa el nuevo nombre de la aerolínea [Actual={aerolineaVieja.getName().upper()}].").strip()).capitalize()
                         codigo = str(input(
                             f"Ingresa el nuevo código de la aerolínea [Actual={aerolineaVieja.getCode().upper()}].").strip()).upper()
-                        aerolineaNueva = Aerolinea([0, nombre, codigo])
+                        aerolineaNueva = Aerolinea(aerolineaVieja.getId(), nombre, codigo)
                         self.airlineManager.edit(aerolineaVieja, aerolineaNueva)
                     elif a == "VUELOS":
                         pass
@@ -180,7 +180,7 @@ class App:
                         pass
                     elif a == "AEROPUERTOS":
                         id = int(input("Ingresa el ID del aeropuerto a editar"))
-                        oldAirport = self.airportManager.findID(id)
+                        oldAirport = self.airportManager.findID(id)[0]
                         if not oldAirport: raise ZeroResults
                         ciudad = str(input(
                             f"Ingresa la nueva ciudad del aeropueto [Actual={oldAirport.getCiudad().upper()}]").strip()).capitalize()
@@ -188,7 +188,7 @@ class App:
                             f"Ingresa el nuevo pais del aeropuerto [Actual={oldAirport.getPais().upper()}]").strip()).capitalize()
                         codigo = str(input(
                             f"Ingresa el nuevo código del aeropuerto [Actual={oldAirport.getCode().upper()}]").strip()).upper()
-                        newAirport = Aeropuerto([0, ciudad, pais, codigo])
+                        newAirport = Aeropuerto(oldAirport.getId(), ciudad, pais, codigo)
                         self.airportManager.edit(oldAirport, newAirport)
                     elif a == "CANCELAR":
                         raise CancelledPayload
@@ -199,19 +199,22 @@ class App:
                     a = str(input("Qué deseas eliminar? (Vuelos/Aerolineas/Pasajeros/Aeropuertos)")).upper().strip()
                     if a == "AEROLINEAS":
                         id = int(input("Ingresa el ID de la aerolinea a eliminar"))
-                        aerolinea = self.airlineManager.findId(id)
+                        aerolinea = self.airlineManager.findId(id)[0]
                         if not aerolinea: raise ZeroResults
                         self.airlineManager.delete(aerolinea)
                     elif a == "VUELOS":
-                        pass
+                        id = int(input("Ingresa el ID del vuelo a eliminar"))
+                        vuelo = self.flightsManager.find(id)[0]
+                        if not vuelo: raise ZeroResults
+                        self.flightsManager.delete(vuelo)
                     elif a == "PASAJEROS":
                         id = int(input("Ingresa el ID del pasajero a eliminar"))
-                        pasajero = self.passengerManager.findId(id)
+                        pasajero = self.passengerManager.findId(id)[0]
                         if not pasajero: raise ZeroResults
                         self.passengerManager.delete(pasajero)
                     elif a == "AEROPUERTOS":
                         id = int(input("Ingresa el ID del aeropuerto a eliminar"))
-                        airport = self.airportManager.findID(id)
+                        airport = self.airportManager.findID(id)[0]
                         if not airport: raise ZeroResults
                         self.airportManager.delete(airport)
                     elif a == "CANCELAR":
@@ -328,6 +331,9 @@ class App:
 
     def getBackupManager(self) -> BackupManager:
         return self.backupManager
+
+    def getAirportManager(self) -> AirportManager:
+        return self.airportManager
 
 
 def main():
