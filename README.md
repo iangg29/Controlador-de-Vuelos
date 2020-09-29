@@ -3,11 +3,11 @@
 </a>
 
 # Proyecto final
-## Versión 1.3
+## Versión 1.4
 #### Materia TC1028.9
 ###### Entrega 16/Octubre/2020
 
-![Version](https://img.shields.io/badge/Version-1.3-blue)
+![Version](https://img.shields.io/badge/Version-1.4-blue)
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
 [![License](https://img.shields.io/badge/license-GNU-blue)](https://opensource.org/licenses/GPL-3.0)
 
