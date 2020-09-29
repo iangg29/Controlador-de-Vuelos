@@ -16,9 +16,11 @@
 ### Dependencias
 
 * DOTENV 
-> pip install -U python-dotenv
+> pip install python-dotenv
 * MYSQL
-> pip install -U mysql-connector-python
+> pip install mysql-connector-python
+* Requests
+> pip install requests
 
 ### Iniciar programa
 
