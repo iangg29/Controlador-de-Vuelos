@@ -24,10 +24,25 @@ from Utilidades.logtype import LogType
 
 
 class App:
+    """
+        La clase principal del programa aquí se almacenan y administran todos los módulos.
+
+        :param author: Nombre del autor del programa
+        :param version: Version actual del programa obtenida de GitHub
+
+    """
+
     author = "Ian García"
     version = None
 
     def __init__(self, name, debug):
+        """
+        Inicializa todos los módulos y configura la aplicación.
+
+        :param name: Nombre del programa
+        :param debug: Modo debug
+        """
+
         self.name = name
         self.debug = debug
         self.started = False
@@ -44,6 +59,23 @@ class App:
         self.printedMenu = False
 
     def start(self):
+        """ Es la función principal del programa
+
+            Inicia y añade los módulos, obtiene la información del servidor por primera vez;
+            Además maneja toda la lógica de los mensajes del programa, junto con todos los mensajes
+            del usuario. Controla las exepciones que pudiera haber al ingresar algún comando
+            desconocido o erroneo.
+
+
+            :raise KeyboardInterrupt: Si en algún momento la aplicación es interrumpida
+            :raise InvalidOption:  Si el usuario ingresa alguna opción no contemplada para el programa
+            :raise ZeroResults: Si no se encontraron resultados en alguna búsqueda
+            :raise InvalidObject: El objeto es inválido al momento de crear uno, ya sea que falte información o tenga algún tipo de dato no admitido
+            :raise CancelledPayload: El usuario decidió cancelar la solicitud
+            :raise FailedDatabaseConnection: La conexión a la base de datos falló por lo que el programa se detiene
+            :raise ValueError: El usuario ingresa algun tipo de valor erroneo
+        """
+
         startTime = self.__getTime()
         self.started = True
 
@@ -133,6 +165,9 @@ class App:
                 self.log("Valor inválido", LogType.SEVERE)
 
     def stop(self):
+        """
+        Detiene la aplicación y finaliza cada uno de los módulos activos.
+        """
         self.started = False
         for module in self.modules:
             module.end()
@@ -140,6 +175,14 @@ class App:
         exit()
 
     def updateData(self):
+        """
+        Obtiene la información del servidor SQL.
+
+        Si la variable del programa dataRefresh de encuentra activa, quiere decir que
+        se necesita actualizar la información del programa, ya que alguna de esta, ha
+        cambiado. Este proceso lo hace vaciando los arreglos de datos de cada módulo y
+        los actualiza haciendo una petición a la base de datos.
+        """
         if self.dataRefresh:
             if self.debug: self.log("Actualizando datos...")
             for module in self.modules:
@@ -150,6 +193,13 @@ class App:
             self.needUpdate(False)
 
     def menu(self, forced=False):
+        """ Imprime el menu de opciones que tiene el programa.
+
+        Imprime el menu de las opciones al principio del programa una sola vez,
+        o a menos que se lo indique con el parámetro forced.
+
+        :param forced : Estatus para forzar la impresión del menu
+        """
         if not self.printedMenu or forced:
             print("-----[ MENU ]-------")
             print("- Aeropuerto")
@@ -164,15 +214,30 @@ class App:
             self.printedMenu = True
 
     def needUpdate(self, bool):
+        """
+        Actuliza la variable dataRefresh para actualizar la información.
+
+        :param bool: Estatus para requerir actualización de datos.
+        """
         self.dataRefresh = bool
 
     def getModules(self):
+        """
+        :return: Lista de todos los módulos cargados.
+        """
         return self.modules
 
-    def loadModules(self, module):
+    def loadModule(self, module):
+        """ Añade un módulo a la lista de módulos.
+
+        :param module: Módulo a añadir
+        """
         self.modules.append(module)
 
     def __getVersion(self):
+        """
+        Actualiza la versión del programa en base a GitHub.
+        """
         response = requests.get("https://api.github.com/repos/iangg29/ITESM-ProyectoPython/releases/latest",
                                 {'owner': 'iangg29', 'repo': 'ITESM-ProyectoPython'})
         if response.status_code == 200:
@@ -182,31 +247,58 @@ class App:
             self.log(response.status_code, LogType.ERROR)
 
     def __getTime(self) -> int:
+        """
+        :return: Regresa el tiempo actual en milisegundos.
+        """
         return int(round(time.time() * 1000))
 
     def log(self, mensaje, tipo=LogType.NORMAL):
+        """
+        Imprime un mensaje dado con un prefijo de acuerdo a LogType (default es normal).
+
+        :param mensaje: str
+        :param tipo: LogType
+        """
         print(f"{tipo} {mensaje}")
 
     def getAirlineManager(self) -> AirlineManager:
+        """
+        :return: Regresa el controlador de Aerolineas
+        """
         return self.airlineManager
 
     def getMySQLManager(self) -> Mysql:
         return self.mysql
 
     def getUtilities(self) -> Utilidades:
+        """
+        :return: Regresa el controlador de Utilidades
+        """
         return self.utilities
 
     def getConfiguracion(self) -> Configuration:
+        """
+        :return: Regresa el controlador de Configuracion
+        """
         return self.configuration
 
     def getBackupManager(self) -> BackupManager:
+        """
+        :return: Regresa el controlador de Backup
+        """
         return self.backupManager
 
     def getAirportManager(self) -> AirportManager:
+        """
+        :return: Regresa el controlador de Aeropuertos
+        """
         return self.airportManager
 
 
 def main():
+    """
+    Crea una nueva instancia de App y la inicializa.
+    """
     app = App("Sistema de aeropuerto", False)
     app.start()
 
