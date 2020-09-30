@@ -7,10 +7,10 @@ import mysql.connector
 from mysql.connector import errorcode
 
 from Exceptions.FailedDatabaseConnection import FailedDatabaseConnection
-from Objetos.Vuelo import Vuelo
+from Objetos.Flight import Flight
 from Utilidades.ModuleType import ModuleType
 from Utilidades.logtype import LogType
-from modulo import Modulo
+from Module import Modulo
 
 
 class Mysql(Modulo):

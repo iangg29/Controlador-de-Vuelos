@@ -3,7 +3,7 @@
 #  A01706892
 #  Archivo creado el 8/9/2020.
 from Utilidades.ModuleType import ModuleType
-from modulo import Modulo
+from Module import Modulo
 
 
 class BackupManager(Modulo):

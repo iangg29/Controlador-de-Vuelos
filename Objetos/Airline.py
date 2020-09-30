@@ -3,7 +3,7 @@
 #  A01706892
 #  Archivo creado el 1/9/2020.
 
-class Aerolinea:
+class Airline:
 
     def __init__(self, id, name, clave):
         self.id = id

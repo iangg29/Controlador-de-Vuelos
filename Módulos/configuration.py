@@ -6,7 +6,7 @@ import os
 
 from dotenv import load_dotenv
 
-from modulo import Modulo
+from Module import Modulo
 
 
 class Configuracion(Modulo):

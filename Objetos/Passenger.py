@@ -3,7 +3,7 @@
 #  A01706892
 #  Archivo creado el 1/9/2020.
 
-class Pasajero:
+class Passenger:
 
     def __init__(self, id, nombre, email, celular, edad, vuelos):
         self.id = id

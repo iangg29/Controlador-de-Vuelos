@@ -4,7 +4,7 @@
 #  Archivo creado el 1/9/2020.
 import requests
 
-from modulo import Modulo
+from Module import Modulo
 
 
 class Utilidades(Modulo):

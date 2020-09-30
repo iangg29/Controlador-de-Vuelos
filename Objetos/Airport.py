@@ -3,7 +3,7 @@
 #  A01706892
 #  Archivo creado el 1/9/2020.
 
-class Aeropuerto:
+class Airport:
 
     def __init__(self, id, ciudad, pais, codigo):
         self.id = id

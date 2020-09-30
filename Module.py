@@ -17,10 +17,20 @@ class Modulo:
         self.mysqlManager = app.getMySQLManager()
         self.configManager = app.getConfiguracion()
         if app.debug: self.log(f"Iniciando módulo [{name.upper()}].", LogType.NORMAL)
-        app.loadModulos(self)
+        app.loadModules(self)
 
     def end(self):
         if self.app.debug: self.log(f"Cerrando módulo [{self.name.lower()}].", LogType.NORMAL)
+
+    def menu(self):
+        print("- Todos")
+        print("- Crear")
+        print("- Buscar")
+        print("- Editar")
+        print("- Eliminar")
+
+    def handleRequest(self):
+        self.log("Para cancelar la petición escribe 'Cancelar'.")
 
     def getApp(self):
         return self.app

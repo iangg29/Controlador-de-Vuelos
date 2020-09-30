@@ -6,7 +6,8 @@
 from datetime import datetime
 
 from Utilidades.ModuleType import ModuleType
-from modulo import Modulo
+from Utilidades.RequestType import RequestType
+from Module import Modulo
 
 
 class Utilidades(Modulo):
@@ -24,3 +25,22 @@ class Utilidades(Modulo):
     def getCurrentTime(self) -> str:
         dateTime = datetime.now()
         return f"{dateTime.hour}:{dateTime.minute}:{dateTime.second}"
+
+    def confirm(self) -> bool:
+        seguro = str(input("¿Estás seguro de realizar esta acción? (S/N): ").strip()).upper()
+        return seguro == "S"
+
+    def handleRequest(self, type) -> RequestType:
+        request = type.upper()
+        if request == "TODOS":
+            return RequestType.TODOS
+        elif request == "CREAR":
+            return RequestType.CREAR
+        elif request == "BUSCAR":
+            return RequestType.BUSCAR
+        elif request == "EDITAR":
+            return RequestType.EDITAR
+        elif request == "ELIMINAR":
+            return RequestType.ELIMINAR
+        else:
+            return RequestType.INVALIDA

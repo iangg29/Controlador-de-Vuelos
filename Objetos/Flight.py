@@ -2,11 +2,11 @@
 #  Ian García González
 #  A01706892
 #  Archivo creado el 1/9/2020.
-from Objetos.Aerolinea import Aerolinea
-from Objetos.Aeropuerto import Aeropuerto
+from Objetos.Airline import Airline
+from Objetos.Airport import Airport
 
 
-class Vuelo:
+class Flight:
 
     def __init__(self, id, origen, destino, capacidad, duracion, tipo, aerolinea, pasajeros):
         self.id = id
@@ -19,15 +19,15 @@ class Vuelo:
         self.pasajeros = pasajeros
 
     def __str__(self) -> str:
-        return f"[{self.getId()}] - Vuelo {self.getNumber()} de {self.origen} a {self.destino}"
+        return f"[{self.getId()}] - Flight {self.getNumber()} de {self.origen} a {self.destino}"
 
     def getId(self) -> int:
         return int(self.id)
 
-    def getOrigen(self) -> Aeropuerto:
+    def getOrigen(self) -> Airport:
         return self.origen
 
-    def getDestino(self) -> Aeropuerto:
+    def getDestino(self) -> Airport:
         return self.destino
 
     def getCapacidad(self) -> int:
@@ -39,7 +39,7 @@ class Vuelo:
     def getTipo(self) -> str:
         return self.tipo
 
-    def getAerolinea(self) -> Aerolinea:
+    def getAerolinea(self) -> Airline:
         return self.aerolinea
 
     def getNumber(self) -> str:
@@ -56,6 +56,6 @@ class Vuelo:
         print(f"Capacidad: {self.getCapacidad()}")
         print(f"Duración: {self.getDuracion()}")
         print(f"Tipo: {('NACIONAL', 'INTERNACIONAL')[self.getTipo() == 'INT']}")
-        print(f"Aerolinea: {self.getAerolinea().getName()} [{self.getAerolinea().getCode()}]")
+        print(f"Airline: {self.getAerolinea().getName()} [{self.getAerolinea().getCode()}]")
         print(f"Pasajeros: {self.getPasajeros()}")
         print("------------------")
