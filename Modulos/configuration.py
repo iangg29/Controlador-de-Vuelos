@@ -7,10 +7,10 @@ import os
 from dotenv import load_dotenv
 
 from Utilidades.ModuleType import ModuleType
-from Module import Modulo
+from Module import Module
 
 
-class Configuration(Modulo):
+class Configuration(Module):
 
     def __init__(self, app, name):
         super().__init__(app, name, ModuleType.UTILITY)

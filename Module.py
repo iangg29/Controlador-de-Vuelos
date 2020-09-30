@@ -7,7 +7,7 @@ from Utilidades.ModuleType import ModuleType
 from Utilidades.logtype import LogType
 
 
-class Modulo:
+class Module:
 
     def __init__(self, app, name, type):
         if not app and not name: raise ModuleFailedLoading

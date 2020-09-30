@@ -4,10 +4,10 @@
 #  Archivo creado el 1/9/2020.
 import requests
 
-from Module import Modulo
+from Module import Module
 
 
-class Utilidades(Modulo):
+class Utilidades(Module):
 
     def __init__(self, app, nombre):
         super().__init__(app, nombre)

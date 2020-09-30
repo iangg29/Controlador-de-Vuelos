@@ -10,10 +10,10 @@ from Exceptions.FailedDatabaseConnection import FailedDatabaseConnection
 from Objetos.Flight import Flight
 from Utilidades.ModuleType import ModuleType
 from Utilidades.logtype import LogType
-from Module import Modulo
+from Module import Module
 
 
-class Mysql(Modulo):
+class Mysql(Module):
 
     def __init__(self, app, name):
         super().__init__(app, name, ModuleType.UTILITY)

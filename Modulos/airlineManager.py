@@ -10,10 +10,10 @@ from Exceptions.ZeroResults import ZeroResults
 from Objetos.Airline import Airline
 from Utilidades.ModuleType import ModuleType
 from Utilidades.RequestType import RequestType
-from Module import Modulo
+from Module import Module
 
 
-class AirlineManager(Modulo):
+class AirlineManager(Module):
 
     def __init__(self, app, name):
         super().__init__(app, name, ModuleType.DATA)

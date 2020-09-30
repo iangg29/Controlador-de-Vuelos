@@ -3,10 +3,10 @@
 #  A01706892
 #  Archivo creado el 8/9/2020.
 from Utilidades.ModuleType import ModuleType
-from Module import Modulo
+from Module import Module
 
 
-class BackupManager(Modulo):
+class BackupManager(Module):
     fileName = "airline_backup.txt"
 
     def __init__(self, app, name):

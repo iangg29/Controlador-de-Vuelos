@@ -7,10 +7,10 @@ from datetime import datetime
 
 from Utilidades.ModuleType import ModuleType
 from Utilidades.RequestType import RequestType
-from Module import Modulo
+from Module import Module
 
 
-class Utilidades(Modulo):
+class Utilidades(Module):
 
     def __init__(self, app, nombre):
         super().__init__(app, nombre, ModuleType.UTILITY)

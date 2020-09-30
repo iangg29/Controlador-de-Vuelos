@@ -6,10 +6,10 @@ import os
 
 from dotenv import load_dotenv
 
-from Module import Modulo
+from Module import Module
 
 
-class Configuracion(Modulo):
+class Configuracion(Module):
 
     def __init__(self, app, nombre):
         super().__init__(app, nombre)
