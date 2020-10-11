@@ -65,6 +65,10 @@ class PassengerManager(Module):
         else:
             raise InvalidOption
 
+    def menu(self):
+        super().menu()
+        print("- Vuelos")
+
     def loadData(self):
         """
         Convierte los registros de la base de datose en objetos (Passenger.py) y los almacena en una lista.
@@ -119,7 +123,7 @@ class PassengerManager(Module):
         email = str(input("Ingresa el email del pasajero").strip()).lower()
         celular = int(input("Ingresa el celular del pasajero").strip())
         edad = int(input("Ingresa la edad del pasajero").strip())
-        vuelos = "[]"
+        vuelos = None
 
         if not nombre or not email or not celular or edad < 0:
             raise InvalidObject
@@ -179,12 +183,11 @@ class PassengerManager(Module):
         email = str(input("Ingresa el nuevo email del pasajero").strip()).lower()
         celular = int(input("Ingresa el nuevo celular del pasajero").strip())
         edad = int(input("Ingresa la nueva edad del pasajero").strip())
-        vuelos = "[]"
 
         if not nombre or not email or not celular or edad < 0:
             raise InvalidObject
 
-        nuevoPasajero = Passenger(pasajero.getId(), nombre, email, celular, edad, vuelos)
+        nuevoPasajero = Passenger(pasajero.getId(), nombre, email, celular, edad, pasajero.getVuelos())
 
         self.log("El pasajero actualizado es: ")
         nuevoPasajero.printDetail()
@@ -196,7 +199,7 @@ class PassengerManager(Module):
         query = ("UPDATE Pasajeros SET name = %s, email = %s, celular = %s, edad = %s, vuelos = %s WHERE id = %s")
         valores = (
             nuevoPasajero.getName(), nuevoPasajero.getEmail(), nuevoPasajero.getCelular(), nuevoPasajero.getEdad(),
-            pasajero.getId())
+            pasajero.getVuelos(), pasajero.getId())
         cursor.execute(query, valores)
         connection.commit()
         self.log("El pasajero ha sido editado.")

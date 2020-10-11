@@ -85,6 +85,10 @@ class FlightManager(Module):
         else:
             raise InvalidOption
 
+    def menu(self):
+        super().menu()
+        print("- Pasajeros")
+
     def find(self, id) -> list:
         """
         Filtra la lista de todos los registros con el id ingresado por el usuario
@@ -143,7 +147,7 @@ class FlightManager(Module):
         capacidad = int(input("Ingresa la capacidad que tendrá el vuelo ").strip())
         duracion = int(input("Ingrea la duración del vuelo en minutos ").strip())
         tipo = ("INT", "NAC")[origen.getPais() == destino.getPais()]
-        pasajeros = "[]"
+        pasajeros = None
 
         if capacidad <= 0 or duracion <= 0:
             raise InvalidObject
@@ -205,13 +209,12 @@ class FlightManager(Module):
                 capacidad = int(input("Ingresa la capacidad que tendrá el vuelo ").strip())
                 duracion = int(input("Ingrea la duración del vuelo en minutos ").strip())
                 tipo = ("INT", "NAC")[origen.getPais() == destino.getPais()]
-                pasajeros = "[]"
 
                 if capacidad <= 0 or duracion <= 0:
                     raise InvalidObject
 
                 nuevoVuelo = Flight(vueloAEditar.getId(), origen, destino, capacidad, duracion, tipo, aerolinea,
-                                    pasajeros)
+                                    vueloAEditar.getPasajeros())
 
                 self.log("El vuelo actualizado es: ")
                 nuevoVuelo.printDetail()
@@ -223,7 +226,7 @@ class FlightManager(Module):
                     "UPDATE Vuelos SET origen = %s, destino = %s, capacidad = %s, duracion = %s, tipo = %s, aerolinea = %s, pasajeros = %s WHERE id = %s")
                 valores = (
                     origen.getId(), destino.getId(), capacidad, duracion, tipo, aerolinea.getId(),
-                    pasajeros, vueloAEditar.getId())
+                    vueloAEditar.getPasajeros(), vueloAEditar.getId())
 
                 cursor.execute(query, valores)
                 connection.commit()
