@@ -62,6 +62,8 @@ class PassengerManager(Module):
             self.edit(connection)
         elif request == RequestType.ELIMINAR:
             self.delete(connection)
+        elif request == RequestType.VUELOS:
+            pass
         else:
             raise InvalidOption
 

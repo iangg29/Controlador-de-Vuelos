@@ -20,6 +20,8 @@ class RequestType(Enum):
     EDITAR = "EDITAR"
     ELIMINAR = "ELIMINAR"
     INVALIDA = "INVALIDA"
+    VUELOS = "VUELOS"
+    PASAJEROS = "PASAJEROS"
 
     def __str__(self):
         """

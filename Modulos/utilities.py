@@ -85,5 +85,9 @@ class Utilidades(Module):
             return RequestType.EDITAR
         elif request == "ELIMINAR":
             return RequestType.ELIMINAR
+        elif request == "PASAJEROS":
+            return RequestType.PASAJEROS
+        elif request == "VUELOS":
+            return RequestType.VUELOS
         else:
             return RequestType.INVALIDA

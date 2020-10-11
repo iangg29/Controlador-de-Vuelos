@@ -82,12 +82,44 @@ class FlightManager(Module):
             self.edit(connection)
         elif request == RequestType.ELIMINAR:
             self.delete(connection)
+        elif request == RequestType.PASAJEROS:
+            self.pasajeros()
         else:
             raise InvalidOption
 
     def menu(self):
         super().menu()
         print("- Pasajeros")
+
+    def pasajeros(self):
+        """
+        :return: Muestra los pasajeros del vuelo seleccionado.
+
+        :raise ZeroResults: En caso de no encontrar el vuelo
+        """
+        accion = str(input("¿Qué deseas hacer? (Vuelo, Agregar, Eliminar) "))
+        if accion.lower() == "vuelo":
+            resultados = self.allPasajeros()
+            if len(resultados) <= 0: raise ZeroResults
+            for pasajero in resultados:
+                pasajero.printDetail()
+
+    def allPasajeros(self) -> list:
+        """
+        :return: Lista de los pasajeros de un vuelo
+        """
+        id = int(input("Ingresa el ID del vuelo a mostrar: ").strip())
+        vuelos = self.find(id)
+        if len(vuelos) <= 0: raise ZeroResults
+        vuelo = vuelos[0]
+        if vuelo.pasajeros == None: raise ZeroResults;
+        pasajerosID = vuelo.getPasajeros().split("-")
+        pasajeros = []
+        for pasajeroID in pasajerosID:
+            busqueda = self.app.passengerManager.findId(int(pasajeroID))
+            if len(busqueda) <= 0: continue
+            pasajeros.append(busqueda[0])
+        return pasajeros
 
     def find(self, id) -> list:
         """
