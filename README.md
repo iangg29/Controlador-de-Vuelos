@@ -26,6 +26,30 @@
 
 > python main.py
 
+### ¿Cómo se utiliza?
+
+#### Mostrar todas las aerolíneas 
+
+> aerolineas
+>
+> todos
+
+#### Crear vuelo 
+
+> vuelos
+>
+> crear
+>
+> (Código aeropuerto de origen)
+>
+> (Código aeropuerto de destino)
+>
+> (Código de la aerolínea)
+>
+> (Capacidad del vuelo)
+>
+> (Duración)
+
 ## License
 
 Este proyecto está bajo la licencia GNU.
