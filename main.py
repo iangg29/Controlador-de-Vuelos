@@ -139,7 +139,7 @@ class App:
                     else:
                         raise InvalidOption
                 elif option == "BACKUP":
-                    self.backupManager.airlineBackup()
+                    self.backupManager.globalBackUp()
                 elif option == "SALIR":
                     self.stop()
                 else:
@@ -266,6 +266,18 @@ class App:
         :return: Regresa el controlador de Aerolineas
         """
         return self.airlineManager
+
+    def getPassengerManager(self) -> PassengerManager:
+        """
+        :return: Regresa el controlador de pasajeros
+        """
+        return self.passengerManager
+
+    def getFlightManager(self) -> FlightManager:
+        """
+        :return: Regresa el controlador de vuelos
+        """
+        return self.flightsManager
 
     def getMySQLManager(self) -> Mysql:
         return self.mysql

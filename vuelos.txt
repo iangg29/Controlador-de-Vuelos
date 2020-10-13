@@ -1,0 +1,17 @@
+*--------------------
+*
+* FILE: vuelos.txt
+*
+* MODULE: FlightsManager
+*
+* DATE: 13/10/2020
+*
+* HORA: 18:3:22
+*
+* --------------------
+* Los registros son:
+[1] - Flight AMX1 de Ciudad de méxico, México [MEX] a Dubai, Emiratos Arabes Unidos [DXB]
+[4] - Flight AMX4 de Querétaro, México [QRO] a Monterrey, México [MTY]
+[5] - Flight AMX5 de Ciudad de méxico, México [MEX] a Atlanta, Estados Unidos [ATL]
+[6] - Flight AMX6 de Monterrey, México [MTY] a Querétaro, México [QRO]
+[7] - Flight USA7 de Atlanta, Estados Unidos [ATL] a Los Angeles, Estados Unidos [LAX]

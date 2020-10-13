@@ -99,24 +99,28 @@ class FlightManager(Module):
         """
         accion = str(input("¿Qué deseas hacer? (Vuelo, Agregar, Eliminar) "))
         if accion.lower() == "vuelo":
-            resultados = self.allPasajeros()
-            if len(resultados) <= 0: raise ZeroResults
+            id = int(input("Ingresa el ID del vuelo a mostrar: ").strip())
+            vuelos = self.find(id)
+            if len(vuelos) <= 0: raise ZeroResults
+            vuelo = vuelos[0]
+            vuelo.printDetail()
+            resultados = self.allPasajeros(vuelo)
+            if len(resultados) <= 0: return
             for pasajero in resultados:
-                pasajero.printDetail()
+                print(pasajero)
+        else:
+            raise InvalidOption
 
-    def allPasajeros(self) -> list:
+    def allPasajeros(self, vuelo) -> list:
         """
+        :param vuelo: Objeto del vuelo a mostrar pasajeros
         :return: Lista de los pasajeros de un vuelo
         """
-        id = int(input("Ingresa el ID del vuelo a mostrar: ").strip())
-        vuelos = self.find(id)
-        if len(vuelos) <= 0: raise ZeroResults
-        vuelo = vuelos[0]
-        if vuelo.pasajeros == None: raise ZeroResults;
+        if vuelo.getPasajeros() == "-1": raise ZeroResults
         pasajerosID = vuelo.getPasajeros().split("-")
         pasajeros = []
         for pasajeroID in pasajerosID:
-            busqueda = self.app.passengerManager.findId(int(pasajeroID))
+            busqueda = self.app.getPassengerManager().findId(int(pasajeroID))
             if len(busqueda) <= 0: continue
             pasajeros.append(busqueda[0])
         return pasajeros

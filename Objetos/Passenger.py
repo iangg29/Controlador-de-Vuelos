@@ -81,5 +81,5 @@ class Passenger:
         print(f"Email: {self.getEmail()}")
         print(f"Celular: {self.getCelular()}")
         print(f"Edad: {self.getEdad()}")
-        print(f"Vuelos: {self.getVuelos()}")
+        print(f"Vuelos: {(len(self.getVuelos().split('-')), 0)[self.getVuelos() == '-1']}")
         print("------------------")

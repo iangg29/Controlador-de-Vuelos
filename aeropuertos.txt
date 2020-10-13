@@ -1,0 +1,20 @@
+*--------------------
+*
+* FILE: aeropuertos.txt
+*
+* MODULE: AirportManager
+*
+* DATE: 13/10/2020
+*
+* HORA: 18:3:22
+*
+* --------------------
+* Los registros son:
+Atlanta, Estados Unidos [ATL]
+Los Angeles, Estados Unidos [LAX]
+Dubai, Emiratos Arabes Unidos [DXB]
+Cozumel, México [CZM]
+Guadalajara, México [GDL]
+Monterrey, México [MTY]
+Ciudad de méxico, México [MEX]
+Querétaro, México [QRO]
