@@ -82,8 +82,67 @@ class FlightManager(Module):
             self.edit(connection)
         elif request == RequestType.ELIMINAR:
             self.delete(connection)
+        elif request == RequestType.PASAJEROS:
+            self.pasajeros(connection)
         else:
             raise InvalidOption
+
+    def menu(self):
+        super().menu()
+        print("- Pasajeros")
+
+    def pasajeros(self, connection):
+        """
+        :return: Muestra los pasajeros del vuelo seleccionado.
+
+        :raise ZeroResults: En caso de no encontrar el vuelo
+        """
+        accion = str(input("¿Qué deseas hacer? (Vuelo, Agregar, Eliminar) "))
+        if accion.lower() == "vuelo":
+            id = int(input("Ingresa el ID del vuelo a mostrar: ").strip())
+            vuelos = self.find(id)
+            if len(vuelos) <= 0: raise ZeroResults
+            vuelo = vuelos[0]
+            vuelo.printDetail()
+            resultados = self.allPasajeros(vuelo)
+            if len(resultados) <= 0: return
+            for pasajero in resultados:
+                print(pasajero)
+        elif accion.lower() == "añadir" or accion.lower() == "agregar":
+            vuelos = self.find(int(input("Ingresa el ID del vuelo para agregar el pasajero: ").strip()))
+            if len(vuelos) <= 0: raise ZeroResults
+            vuelo = vuelos[0]
+            pasajeros = self.app.getPassengerManager().findId(
+                int(input("Ingresa el ID del pasajero para agregar al vuelo: ").strip()))
+            if len(pasajeros) <= 0: raise ZeroResults
+            pasajero = pasajeros[0]
+            self.agregarPasajero(vuelo, pasajero, connection)
+        elif accion.lower() == "eliminar" or accion.lower() == "borrar":
+            pasajeros = self.app.getPassengerManager().findId(
+                int(input("Ingresa el ID del pasajero para borrar del vuelo: ").strip()))
+            if len(pasajeros) <= 0: raise ZeroResults
+            pasajero = pasajeros[0]
+            vuelos = self.find(
+                int(input("Ingresa el ID del vuelo para borrar el pasajero: ").strip()))
+            if len(vuelos) <= 0: raise ZeroResults
+            vuelo = vuelos[0]
+            self.eliminarPasajero(vuelo, pasajero, connection)
+        else:
+            raise InvalidOption
+
+    def allPasajeros(self, vuelo) -> list:
+        """
+        :param vuelo: Objeto del vuelo a mostrar pasajeros
+        :return: Lista de los pasajeros de un vuelo
+        """
+        if vuelo.getPasajeros() == "-1": raise ZeroResults
+        pasajerosID = vuelo.getPasajeros().split("-")
+        pasajeros = []
+        for pasajeroID in pasajerosID:
+            busqueda = self.app.getPassengerManager().findId(int(pasajeroID))
+            if len(busqueda) <= 0: continue
+            pasajeros.append(busqueda[0])
+        return pasajeros
 
     def find(self, id) -> list:
         """
@@ -143,7 +202,7 @@ class FlightManager(Module):
         capacidad = int(input("Ingresa la capacidad que tendrá el vuelo ").strip())
         duracion = int(input("Ingrea la duración del vuelo en minutos ").strip())
         tipo = ("INT", "NAC")[origen.getPais() == destino.getPais()]
-        pasajeros = "[]"
+        pasajeros = "-1"
 
         if capacidad <= 0 or duracion <= 0:
             raise InvalidObject
@@ -205,13 +264,12 @@ class FlightManager(Module):
                 capacidad = int(input("Ingresa la capacidad que tendrá el vuelo ").strip())
                 duracion = int(input("Ingrea la duración del vuelo en minutos ").strip())
                 tipo = ("INT", "NAC")[origen.getPais() == destino.getPais()]
-                pasajeros = "[]"
 
                 if capacidad <= 0 or duracion <= 0:
                     raise InvalidObject
 
                 nuevoVuelo = Flight(vueloAEditar.getId(), origen, destino, capacidad, duracion, tipo, aerolinea,
-                                    pasajeros)
+                                    vueloAEditar.getPasajeros())
 
                 self.log("El vuelo actualizado es: ")
                 nuevoVuelo.printDetail()
@@ -223,7 +281,7 @@ class FlightManager(Module):
                     "UPDATE Vuelos SET origen = %s, destino = %s, capacidad = %s, duracion = %s, tipo = %s, aerolinea = %s, pasajeros = %s WHERE id = %s")
                 valores = (
                     origen.getId(), destino.getId(), capacidad, duracion, tipo, aerolinea.getId(),
-                    pasajeros, vueloAEditar.getId())
+                    vueloAEditar.getPasajeros(), vueloAEditar.getId())
 
                 cursor.execute(query, valores)
                 connection.commit()

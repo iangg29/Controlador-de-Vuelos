@@ -1,0 +1,14 @@
+*--------------------
+*
+* FILE: pasajeros.txt
+*
+* MODULE: PassengerManager
+*
+* DATE: 15/10/2020
+*
+* HORA: 13:17:34
+*
+* --------------------
+* Los registros son:
+Ian Garcia
+Freddy benz

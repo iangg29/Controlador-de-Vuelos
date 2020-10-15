@@ -2,7 +2,9 @@
 #  Ian García González
 #  A01706892
 #  Archivo creado el 1/9/2020.
+from Exceptions.CancelledPayload import CancelledPayload
 from Exceptions.ModuleFailedLoading import ModuleFailedLoading
+from Exceptions.ZeroResults import ZeroResults
 from Utilidades.ModuleType import ModuleType
 from Utilidades.logtype import LogType
 
@@ -29,7 +31,7 @@ class Module:
         self.type = type
         self.mysqlManager = app.getMySQLManager()
         self.configManager = app.getConfiguracion()
-        if app.debug: self.log(f"Iniciando módulo [{name.upper()}].", LogType.NORMAL )
+        if app.debug: self.log(f"Iniciando módulo [{name.upper()}].", LogType.NORMAL)
         app.loadModule(self)
 
     def end(self):
@@ -53,6 +55,82 @@ class Module:
         Función base para controlar las peticiones que se hacen a los módulos.
         """
         self.log("Para cancelar la petición escribe 'Cancelar'.")
+
+    def agregarPasajero(self, vuelo, pasajero, connection):
+        """
+        :param vuelo: Vuelo a agregar pasajero.
+        :param pasajero: Pasajero a agregar al vuelo
+        :param connection: Conexión al servidor
+        :raise CancelledPayload: En caso de que el usuario cancele la petición.
+        """
+        self.log("El pasajero es: ")
+        pasajero.printDetail()
+        self.log("El vuelo es: ")
+        vuelo.printDetail()
+
+        if not self.app.getUtilities().confirm():
+            raise CancelledPayload
+
+        pasajeros = vuelo.getPasajeros()
+        vuelos = pasajero.getVuelos()
+        if pasajeros == "-1":
+            newPassengers = pasajero.getId()
+        else:
+            newPassengers = pasajeros + f"-{pasajero.getId()}"
+
+        if vuelos == "-1":
+            newFlights = vuelo.getId()
+        else:
+            newFlights = vuelos + f"-{vuelo.getId()}"
+
+        cursor = connection.cursor()
+        query = ("UPDATE Vuelos SET pasajeros = %s WHERE id = %s")
+        valores = (newPassengers, vuelo.getId())
+        cursor.execute(query, valores)
+        query = ("UPDATE Pasajeros SET vuelos = %s WHERE id = %s")
+        valores = (newFlights, pasajero.getId())
+        cursor.execute(query, valores)
+        connection.commit()
+        self.log("El pasajero ha sido agregado al vuelo.")
+        self.app.needUpdate(True)
+
+    def eliminarPasajero(self, vuelo, pasajero, connection):
+        """
+        :param vuelo: Vuelo a quitar pasajero
+        :param pasajero: Pasajero a quitar del vuelo
+        :param connection: Conexión a la base de datos.
+        """
+
+        self.log("El pasajero es: ")
+        pasajero.printDetail()
+        self.log("El vuelo es: ")
+        vuelo.printDetail()
+
+        if not self.app.getUtilities().confirm():
+            raise CancelledPayload
+
+        if pasajero.getVuelos() == "-1" or vuelo.getPasajeros() == "-1":
+            raise ZeroResults
+
+        vuelosID = pasajero.getVuelos().split("-")
+        pasajerosID = vuelo.getPasajeros().split("-")
+
+        vuelosID.remove(str(vuelo.getId()))
+        pasajerosID.remove(str(pasajero.getId()))
+
+        newFlightsID = '-'.join(vuelosID)
+        newPasajerosID = '-'.join(pasajerosID)
+
+        cursor = connection.cursor()
+        query = ("UPDATE Vuelos SET pasajeros = %s WHERE id = %s")
+        valores = (newPasajerosID, vuelo.getId())
+        cursor.execute(query, valores)
+        query = ("UPDATE Pasajeros SET vuelos = %s WHERE id = %s")
+        valores = (newFlightsID, pasajero.getId())
+        cursor.execute(query, valores)
+        connection.commit()
+        self.log("El pasajero ha sido eliminado del vuelo.")
+        self.app.needUpdate(True)
 
     def getApp(self):
         """

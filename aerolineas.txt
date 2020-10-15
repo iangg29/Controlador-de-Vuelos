@@ -1,0 +1,22 @@
+*--------------------
+*
+* FILE: aerolineas.txt
+*
+* MODULE: AirlineManager
+*
+* DATE: 15/10/2020
+*
+* HORA: 13:17:34
+*
+* --------------------
+* Los registros son:
+1 Aeromexico [AMX]
+2 Air Canada [ACA]
+3 American Airlines [AAL]
+4 British Airways [BAW]
+5 Us airways [USA]
+6 Garuda indonesia [GAI]
+7 KLM [KLM]
+9 Air France [AFR]
+10 Interjet [AIJ]
+11 Aeromar [AER]

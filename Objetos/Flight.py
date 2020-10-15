@@ -108,5 +108,5 @@ class Flight:
         print(f"Duración: {self.getDuracion()}")
         print(f"Tipo: {('NACIONAL', 'INTERNACIONAL')[self.getTipo() == 'INT']}")
         print(f"Airline: {self.getAerolinea().getName()} [{self.getAerolinea().getCode()}]")
-        print(f"Pasajeros: {self.getPasajeros()}")
+        print(f"Pasajeros: {(len(self.getPasajeros().split('-')), 0)[self.getPasajeros() == '-1']}")
         print("------------------")

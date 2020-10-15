@@ -2,7 +2,7 @@
 #  Ian García González
 #  A01706892
 #  Archivo creado el 30/9/2020.
-import datetime
+from datetime import datetime
 
 import requests
 
@@ -85,5 +85,9 @@ class Utilidades(Module):
             return RequestType.EDITAR
         elif request == "ELIMINAR":
             return RequestType.ELIMINAR
+        elif request == "PASAJEROS":
+            return RequestType.PASAJEROS
+        elif request == "VUELOS":
+            return RequestType.VUELOS
         else:
             return RequestType.INVALIDA
