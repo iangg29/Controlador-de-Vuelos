@@ -4,9 +4,9 @@
 *
 * MODULE: AirportManager
 *
-* DATE: 13/10/2020
+* DATE: 15/10/2020
 *
-* HORA: 18:3:22
+* HORA: 13:17:34
 *
 * --------------------
 * Los registros son:
@@ -18,3 +18,4 @@ Guadalajara, México [GDL]
 Monterrey, México [MTY]
 Ciudad de méxico, México [MEX]
 Querétaro, México [QRO]
+Nueva york, Estados unidos [JFK]

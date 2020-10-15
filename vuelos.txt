@@ -4,9 +4,9 @@
 *
 * MODULE: FlightsManager
 *
-* DATE: 13/10/2020
+* DATE: 15/10/2020
 *
-* HORA: 18:3:22
+* HORA: 13:17:34
 *
 * --------------------
 * Los registros son:
@@ -15,3 +15,4 @@
 [5] - Flight AMX5 de Ciudad de méxico, México [MEX] a Atlanta, Estados Unidos [ATL]
 [6] - Flight AMX6 de Monterrey, México [MTY] a Querétaro, México [QRO]
 [7] - Flight USA7 de Atlanta, Estados Unidos [ATL] a Los Angeles, Estados Unidos [LAX]
+[8] - Flight AMX8 de Ciudad de méxico, México [MEX] a Nueva york, Estados unidos [JFK]

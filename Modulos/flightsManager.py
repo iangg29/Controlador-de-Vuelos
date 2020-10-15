@@ -83,7 +83,7 @@ class FlightManager(Module):
         elif request == RequestType.ELIMINAR:
             self.delete(connection)
         elif request == RequestType.PASAJEROS:
-            self.pasajeros()
+            self.pasajeros(connection)
         else:
             raise InvalidOption
 
@@ -91,7 +91,7 @@ class FlightManager(Module):
         super().menu()
         print("- Pasajeros")
 
-    def pasajeros(self):
+    def pasajeros(self, connection):
         """
         :return: Muestra los pasajeros del vuelo seleccionado.
 
@@ -108,6 +108,25 @@ class FlightManager(Module):
             if len(resultados) <= 0: return
             for pasajero in resultados:
                 print(pasajero)
+        elif accion.lower() == "añadir" or accion.lower() == "agregar":
+            vuelos = self.find(int(input("Ingresa el ID del vuelo para agregar el pasajero: ").strip()))
+            if len(vuelos) <= 0: raise ZeroResults
+            vuelo = vuelos[0]
+            pasajeros = self.app.getPassengerManager().findId(
+                int(input("Ingresa el ID del pasajero para agregar al vuelo: ").strip()))
+            if len(pasajeros) <= 0: raise ZeroResults
+            pasajero = pasajeros[0]
+            self.agregarPasajero(vuelo, pasajero, connection)
+        elif accion.lower() == "eliminar" or accion.lower() == "borrar":
+            pasajeros = self.app.getPassengerManager().findId(
+                int(input("Ingresa el ID del pasajero para borrar del vuelo: ").strip()))
+            if len(pasajeros) <= 0: raise ZeroResults
+            pasajero = pasajeros[0]
+            vuelos = self.find(
+                int(input("Ingresa el ID del vuelo para borrar el pasajero: ").strip()))
+            if len(vuelos) <= 0: raise ZeroResults
+            vuelo = vuelos[0]
+            self.eliminarPasajero(vuelo, pasajero, connection)
         else:
             raise InvalidOption
 
@@ -183,7 +202,7 @@ class FlightManager(Module):
         capacidad = int(input("Ingresa la capacidad que tendrá el vuelo ").strip())
         duracion = int(input("Ingrea la duración del vuelo en minutos ").strip())
         tipo = ("INT", "NAC")[origen.getPais() == destino.getPais()]
-        pasajeros = None
+        pasajeros = "-1"
 
         if capacidad <= 0 or duracion <= 0:
             raise InvalidObject

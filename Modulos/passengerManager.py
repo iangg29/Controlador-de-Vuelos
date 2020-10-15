@@ -63,7 +63,7 @@ class PassengerManager(Module):
         elif request == RequestType.ELIMINAR:
             self.delete(connection)
         elif request == RequestType.VUELOS:
-            self.vuelos()
+            self.vuelos(connection)
         else:
             raise InvalidOption
 
@@ -89,7 +89,7 @@ class PassengerManager(Module):
         cursor.close()
         connection.close()
 
-    def vuelos(self):
+    def vuelos(self, connection):
         """
         :return: Muestra los vuelos de cada pasajero
 
@@ -106,6 +106,24 @@ class PassengerManager(Module):
             if len(resultados) <= 0: return
             for vuelo in resultados:
                 print(vuelo)
+        elif accion.lower() == "añadir" or accion.lower() == "agregar":
+            pasajeros = self.findId(int(input("Ingresa el ID del pasajero para agregar al vuelo: ").strip()))
+            if len(pasajeros) <= 0: raise ZeroResults
+            pasajero = pasajeros[0]
+            vuelos = self.app.getFlightManager().find(
+                int(input("Ingresa el ID del vuelo para agregar el pasajero: ").strip()))
+            if len(vuelos) <= 0: raise ZeroResults
+            vuelo = vuelos[0]
+            self.agregarPasajero(vuelo, pasajero, connection)
+        elif accion.lower() == "eliminar" or accion.lower() == "borrar":
+            pasajeros = self.findId(int(input("Ingresa el ID del pasajero para borrar del vuelo: ").strip()))
+            if len(pasajeros) <= 0: raise ZeroResults
+            pasajero = pasajeros[0]
+            vuelos = self.app.getFlightManager().find(
+                int(input("Ingresa el ID del vuelo para borrar el pasajero: ").strip()))
+            if len(vuelos) <= 0: raise ZeroResults
+            vuelo = vuelos[0]
+            self.eliminarPasajero(vuelo, pasajero, connection)
         else:
             raise InvalidOption
 
@@ -159,7 +177,7 @@ class PassengerManager(Module):
         email = str(input("Ingresa el email del pasajero").strip()).lower()
         celular = int(input("Ingresa el celular del pasajero").strip())
         edad = int(input("Ingresa la edad del pasajero").strip())
-        vuelos = None
+        vuelos = "-1"
 
         if not nombre or not email or not celular or edad < 0:
             raise InvalidObject
