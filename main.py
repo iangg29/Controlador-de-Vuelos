@@ -25,11 +25,10 @@ from Utilidades.logtype import LogType
 
 class App:
     """
-        La clase principal del programa aquí se almacenan y administran todos los módulos.
+    La clase principal del programa aquí se almacenan y administran todos los módulos.
 
-        :param author: Nombre del autor del programa
-        :param version: Version actual del programa obtenida de GitHub
-
+    :param author: Nombre del autor del programa
+    :param version: Version actual del programa obtenida de GitHub
     """
 
     author = "Ian García"
