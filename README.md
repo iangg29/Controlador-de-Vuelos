@@ -2,10 +2,11 @@
     <img src="https://javier.rodriguez.org.mx/itesm/2014/tecnologico-de-monterrey-black.png" alt="ITESM" title="ITESM" align="right" height="60" />
 </a>
 
-# Proyecto final
-## Versión 3
+# Controlador de Vuelos
+## Proyecto final
+### Versión 3
 #### Materia TC1028.9
-###### Entrega 15/Octubre/2020
+#### Entrega 15/Octubre/2020
 
 ![Version](https://img.shields.io/badge/Version-3-blue)
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
